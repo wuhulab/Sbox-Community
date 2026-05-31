@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>作家中心 - 林小满</title>
+  <!-- 引入字体 -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC :wght@400;700&family=Kaisei+Decol&display=swap" rel="stylesheet">
+  <style>
+    /* 基础设置 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: #fdf6f0;
+      color: #333;
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .avatar {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid #ff6ec7;
+
+    }
+
+    .profile-info {
+      flex: 1;
+    }
+
+    .profile-name {
+      font-size: 1.8rem;
+      color: #ff6ec7;
+      font-family: 'Kaisei Decol', cursive;
+      margin-bottom: 0.5rem;
+    }
+
+    .profile-bio {
+      font-size: 1rem;
+      color: #666;
+    }
+
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .stat-card {
+      flex: 1 1 150px;
+      background: #fff0f8;
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+      border: 1px solid #ffe6f2;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      color: #ff6ec7;
+      font-weight: bold;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: #999;
+    }
+
+    .action-buttons {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+
+    .action-btn {
+      padding: 0.6rem 1.2rem;
+      border-radius: 25px;
+      border: none;
+      background-color: #ff6ec7;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .action-btn:hover {
+      background-color: #e05ebe;
+    }
+
+    .works-section {
+      margin-top: 2.5rem;
+    }
+
+    .works-title {
+      font-size: 1.4rem;
+      color: #ff6ec7;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .works-title::after {
+      content: '';
+      display: block;
+      margin: 0.5rem 0;
+      width: 60px;
+      height: 3px;
+      background: #ff6ec7;
+      border-radius: 2px;
+    }
+
+    .work-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .work-card {
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+
+      transition: transform 0.3s ease;
+      text-align: center;
+    }
+
+    .work-cover {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 2 / 3;
+      object-fit: cover;
+    }
+
+    .work-title {
+      font-size: 1rem;
+      color: #333;
+      margin: 0.5rem 0;
+      padding: 0 0.5rem;
+    }
+
+    .work-meta {
+      font-size: 0.85rem;
+      color: #999;
+      margin-bottom: 1rem;
+    }
+
+    .work-card:hover {
+      transform: translateY(-5px);
+    }
+
+    @media (max-width: 600px) {
+      .profile-header {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .avatar {
+        width: 80px;
+        height: 80px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- 作家信息 -->
+  <div class="profile-header">
+    <img src="https://via.placeholder.com/100x100.png?text= 林小满" alt="作家头像" class="avatar" />
+    <div class="profile-info">
+      <h2 class="profile-name">林小满</h2>
+      <p class="profile-bio">擅长青春校园题材写作，代表作《春风十里不如你》广受好评。</p>
+    </div>
+  </div>
+
+  <!-- 统计信息 -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-value">3</div>
+      <div class="stat-label">作品数量</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">50万+</div>
+      <div class="stat-label">累计字数</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">10万+</div>
+      <div class="stat-label">读者收藏</div>
+    </div>
+  </div>
+
+  <!-- 操作按钮 -->
+  <div class="action-buttons">
+    <button class="action-btn">➕ 发布新书</button>
+    <button class="action-btn">📖 管理作品</button>
+  </div>
+
+  <!-- 作品列表 -->
+  <div class="works-section">
+    <h3 class="works-title">作家作品</h3>
+    <div class="work-grid">
+      <div class="work-card">
+        <img src="https://via.placeholder.com/180x270.png?text= 封面图1" alt="作品封面" class="work-cover" />
+        <p class="work-title">春风十里不如你</p>
+        <p class="work-meta">已完结 · 30万字</p>
+      </div>
+      <div class="work-card">
+        <img src="https://via.placeholder.com/180x270.png?text= 封面图2" alt="作品封面" class="work-cover" />
+        <p class="work-title">夏日微光</p>
+        <p class="work-meta">连载中 · 10万字</p>
+      </div>
+      <div class="work-card">
+        <img src="https://via.placeholder.com/180x270.png?text= 封面图3" alt="作品封面" class="work-cover" />
+        <p class="work-title">花开半夏</p>
+        <p class="work-meta">已完结 · 12万字</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

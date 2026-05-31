@@ -1,0 +1,86 @@
+<!-- 统一导航栏组件 -->
+<!-- 使用方式：在其他模板中引入此导航栏 -->
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+
+<nav class="navbar">
+    <a href="/" class="navbar-brand">小盒子社区</a>
+
+    <!-- 移动端菜单按钮 -->
+    <button class="menu-toggle" onclick="toggleNavbar()">☰</button>
+
+    <!-- 导航链接 -->
+    <ul class="navbar-nav" id="navbarNav">
+        <li><a href="/">首页</a></li>
+        <li><a href="/search">作品搜索</a></li>
+        {% if session.get('username') %}
+        <li class="navbar-dropdown">
+            <a href="javascript:void(0)" class="navbar-dropdown-toggle" onclick="toggleDropdown(event)">
+                {{ session['username'] }} ▾
+            </a>
+            <ul class="navbar-dropdown-menu">
+                <li><a href="/user/{{ session['username'] }}">个人中心</a></li>
+                <li><a href="/tougaoscratch">投稿作品</a></li>
+                <li><a href="/users">用户更改</a></li>
+                <li><a href="{{ url_for('main.logout') }}">登出</a></li>
+            </ul>
+        </li>
+        {% else %}
+        <li><a href="{{ url_for('main.login') }}">登录</a></li>
+        <li><a href="{{ url_for('main.register') }}">注册</a></li>
+        {% endif %}
+        <li><button class="theme-toggle" onclick="toggleTheme()">&#9788;</button></li>
+    </ul>
+</nav>
+
+<script>
+    // 导航栏切换（移动端）
+    function toggleNavbar() {
+        const nav = document.getElementById('navbarNav');
+        nav.classList.toggle('active');
+    }
+
+    // 下拉菜单切换
+    function toggleDropdown(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const dropdown = event.currentTarget.closest('.navbar-dropdown');
+        
+        // 关闭其他打开的下拉菜单
+        document.querySelectorAll('.navbar-dropdown.open').forEach(function(dd) {
+            if (dd !== dropdown) {
+                dd.classList.remove('open');
+            }
+        });
+        
+        dropdown.classList.toggle('open');
+    }
+
+    // 点击其他地方关闭下拉菜单
+    document.addEventListener('click', function(event) {
+        const dropdown = event.target.closest('.navbar-dropdown');
+        if (!dropdown) {
+            document.querySelectorAll('.navbar-dropdown.open').forEach(function(dd) {
+                dd.classList.remove('open');
+            });
+        }
+    });
+
+    // 主题切换
+    function toggleTheme() {
+        const html = document.documentElement;
+        if (html.getAttribute('data-theme') === 'light') {
+            html.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            html.setAttribute('data-theme', 'light');
+            localStorage.setItem('theme', 'light');
+        }
+    }
+
+    // 页面加载时根据本地存储设置主题
+    (function() {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+</script>

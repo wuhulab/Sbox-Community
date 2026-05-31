@@ -1,0 +1,136 @@
+/* Common CSS styles for 小盒子社区 */
+
+/* Global styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7fc;
+    color: #333;
+    line-height: 1.6;
+    padding-top: 60px;
+}
+
+/* Navigation - 统一使用 navbar.css 样式 */
+/* 此处保留旧版样式作为兼容，新页面请使用 navbar.css */
+
+
+/* Main content */
+main {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* User center styles */
+.user-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.user-container h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+    border-bottom: 2px solid #4CAF50;
+    padding-bottom: 10px;
+}
+
+.user-container h2 {
+    font-size: 18px;
+    margin: 20px 0 10px;
+    color: #555;
+}
+
+.user-container p {
+    margin-bottom: 15px;
+    color: #666;
+}
+
+.user-container ul {
+    list-style-type: none;
+    margin-left: 20px;
+}
+
+.user-container li {
+    margin: 8px 0;
+}
+
+.user-container a {
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+
+/* Footer */
+footer {
+    background-color: white;
+    padding: 20px;
+    text-align: center;
+    margin-top: 40px;
+    border-top: 1px solid #eee;
+    font-size: 14px;
+    color: #666;
+}
+
+footer p {
+    margin: 5px 0;
+}
+
+footer a {
+    color: #3b82f6;
+    text-decoration: none;
+}
+
+
+/* Flash messages */
+.flash-message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 4px;
+    border-left: 4px solid #4CAF50;
+}
+
+.flash-message.error {
+    color: red;
+    border-left-color: red;
+    background-color: #ffebee;
+}
+
+.flash-message.success {
+    color: green;
+    border-left-color: green;
+    background-color: #e8f5e8;
+}
+
+.flash-message {
+    color: blue;
+    border-left-color: blue;
+    background-color: #e3f2fd;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    nav {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .menu-icon {
+        margin-bottom: 10px;
+    }
+    
+    .user-container {
+        padding: 20px;
+    }
+    
+    main {
+        padding: 10px;
+    }
+}

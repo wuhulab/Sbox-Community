@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小盒子社区-{{ username }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        nav {
+            background-color: #333;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .menu-icon {
+            font-size: 24px;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        .dropdown {
+            position: relative;
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        
+        .dropdown-content {
+            display: none;
+            background-color: #333;
+            color: white;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 200px;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+        
+        .dropdown-content a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .dropdown-content a:hover {
+            background-color: #575757;
+        }
+        
+        .dropdown.open .dropdown-content {
+            display: block;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            background: #6a11cb;
+            color: white;
+            padding: 40px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .avatar {
+            width: 120px;
+            height: 120px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 30px;
+            font-size: 48px;
+            color: #6a11cb;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .profile-info {
+            flex: 1;
+        }
+        
+        .profile-info h1 {
+            margin: 0 0 10px;
+            font-size: 36px;
+            font-weight: 700;
+        }
+        
+        .stats {
+            display: flex;
+            margin: 15px 0;
+        }
+        
+        .stat-item {
+            margin-right: 30px;
+            font-size: 16px;
+        }
+        
+        .stat-item strong {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #eaeaea;
+            margin-bottom: 25px;
+            background: white;
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+        }
+        
+        .tab {
+            padding: 12px 25px;
+            cursor: pointer;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid #6a11cb;
+            color: #6a11cb;
+            background-color: #f9f9f9;
+        }
+        
+        .tab:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .content-section {
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 0 0 10px 10px;
+            padding: 25px;
+        }
+        
+        .content-section h2 {
+            font-size: 24px;
+            margin-top: 0;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            color: #444;
+        }
+        
+        .content-section p {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        .project-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+        
+        .project-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .project-image {
+            height: 180px;
+            background: #6a11cb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+        }
+        
+        .project-info {
+            padding: 20px;
+        }
+        
+        .project-info h3 {
+            margin: 0 0 10px;
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .project-info p {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .project-link {
+            display: inline-block;
+            background: #6a11cb;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+        
+        .project-link:hover {
+            background: #2575fc;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+            background: #fafafa;
+            border-radius: 8px;
+            border: 1px dashed #ddd;
+        }
+        
+        .empty-state p {
+            margin: 10px 0 20px;
+        }
+        
+        .upload-btn {
+            display: inline-block;
+            background: #6a11cb;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+        
+        .upload-btn:hover {
+            background: #2575fc;
+        }
+        
+        .activity-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-item p {
+            margin: 0;
+        }
+        
+        .activity-item .time {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .about-content {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .about-text {
+            flex: 1;
+        }
+        
+        .skills {
+            flex: 1;
+        }
+        
+        .skill-item {
+            margin-bottom: 15px;
+        }
+        
+        .skill-name {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .skill-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .skill-progress {
+            height: 100%;
+            background: #6a11cb;
+            border-radius: 4px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: #333;
+            color: #aaa;
+            margin-top: 50px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                padding: 10px 20px;
+            }
+            
+            .avatar {
+                margin: 0 auto 20px;
+            }
+            
+            .stats {
+                justify-content: center;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                flex: 1;
+                text-align: center;
+                padding: 10px;
+            }
+            
+            .project-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .about-content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include "navbar.html" %}
+
+    <div class="container">
+        <div class="profile-header">
+            <div class="avatar">{{ username.charAt(0).toUpperCase() }}</div>
+            <div class="profile-info">
+                <h1>{{ username }}</h1>
+                <p>欢迎来到我的创作空间，这里展示我的所有作品和项目。</p>
+                <div class="stats">
+                    <div class="stat-item">
+                        <strong>{{ zhuopinsc1.length }}</strong>
+                        <span>项目作品</span>
+                    </div>
+                    <div class="stat-item">
+                        <strong>{{ follow }}</strong>
+                        <span>粉丝</span>
+                    </div>
+                    <div class="stat-item">
+                        <strong>{{ like }}</strong>
+                        <span>获赞</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="home">个人主页</div>
+            <div class="tab" data-tab="projects">作品展示</div>
+            <div class="tab" data-tab="about">关于我</div>
+            <div class="tab" data-tab="activity">动态</div>
+        </div>
+        
+        <div class="tab-content active" id="home-tab">
+            <div class="content-section">
+                <h2>个人简介</h2>
+                <p>你好！我是{{ username }}，一名热爱编程和创意设计的创作者。在小盒子社区，我分享我的编程作品和设计项目。我喜欢探索新技术并创建有趣的项目。通过我的作品，我希望能够激发他人的创造力并与志同道合的人交流想法。</p>
+            </div>
+            
+            <div class="content-section">
+                <h2>我的作品</h2>
+                {% if zhuopinsc1.length > 0 %}
+                    <div class="project-list">
+                        {% for item in zhuopinsc1.slice(0, 4) %}
+                        <div class="project-card">
+                            <a href="/scratch/{{ item.id }}">
+                            <div class="project-image">📁</div>
+                            <div class="project-info">
+                                <h3>{{ item.title }}</h3>
+                            </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>该用户没有发布作品</p>
+                {% endif %}
+            </div>
+
+        </div>
+        
+        <div class="tab-content" id="projects-tab">
+            <div class="content-section">
+                <h2>全部作品</h2>
+                {% if zhuopinsc1.length > 0 %}
+                    <div class="project-list">
+                        {% for item in zhuopinsc1 %}
+                        <div class="project-card">
+                            <a href="/scratch/{{ item.id }}">
+                            <div class="project-image">📁</div>
+                            <div class="project-info">
+                                <h3>{{ item.title }}</h3>
+                            </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <h3>暂无作品</h3>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="tab-content" id="about-tab">
+            <div class="content-section">
+                <h2>关于我</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <p>你好，我是{{ username }}！我是一名充满热情的创造者和程序员，专注于互动媒体和创意编程领域。</p>
+                        <p>我于2018年开始学习编程，最初是从Scratch平台入手。随着技能的增长，我开始探索更多技术领域，包括Web开发、游戏设计和互动艺术。</p>
+                        <p>在小盒子社区，我分享我的创意项目和学习心得。我相信编程不仅是一种技能，更是表达创意和解决问题的强大工具。</p>
+                        <p>在我的空闲时间，我喜欢参加编程马拉松、探索新技术，以及在社区中帮助其他创作者解决技术问题。</p>
+                    </div>
+                    <div class="skills">
+                        <h3>技能</h3>
+                        <div class="skill-item">
+                            <div class="skill-name">
+                                <span>Scratch编程</span>
+                                <span>95%</span>
+                            </div>
+                            <div class="skill-bar">
+                                <div class="skill-progress" style="width: 95%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">
+                                <span>Web前端开发</span>
+                                <span>85%</span>
+                            </div>
+                            <div class="skill-bar">
+                                <div class="skill-progress" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">
+                                <span>游戏设计</span>
+                                <span>80%</span>
+                            </div>
+                            <div class="skill-bar">
+                                <div class="skill-progress" style="width: 80%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">
+                                <span>互动媒体</span>
+                                <span>75%</span>
+                            </div>
+                            <div class="skill-bar">
+                                <div class="skill-progress" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">
+                                <span>UI/UX设计</span>
+                                <span>70%</span>
+                            </div>
+                            <div class="skill-bar">
+                                <div class="skill-progress" style="width: 70%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="activity-tab">
+            <div class="content-section">
+                <h2>最新动态</h2>
+                <div class="activity">
+                    <div class="activity-item">
+                    这里应该放点别的东西
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>2025 小盒子社区</p>
+        开源文件 <a href="https://gitee.com/wujiajiouwei/small-box-community">gitee</a> | <a href="https://gitee.com/wujiajiouwei/scratch-git">ScratchGit</a> | <a href="https://gitee.com/wujiajiouwei/sbox-api">Sboxapi</a><br>
+        网站相关 <a href = "/required">使用小盒子必读</a> | <a href="/download">下载相关软件</a> | <a href="/thanks">特别鸣谢</a><br>
+    </footer>
+
+    <script>
+        // 导航栏下拉菜单切换
+        function toggleDropdown(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const toggle = event.currentTarget;
+            const dropdown = toggle.closest('.navbar-dropdown');
+            
+            if (!dropdown) {
+                console.error('Dropdown parent not found');
+                return;
+            }
+            
+            // 关闭其他打开的下拉菜单
+            document.querySelectorAll('.navbar-dropdown.open').forEach(function(dd) {
+                if (dd !== dropdown) {
+                    dd.classList.remove('open');
+                }
+            });
+            
+            // 切换当前下拉菜单
+            const isOpen = dropdown.classList.contains('open');
+            if (isOpen) {
+                dropdown.classList.remove('open');
+            } else {
+                dropdown.classList.add('open');
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents[0].classList.add('active');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(`${targetTab}-tab`).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

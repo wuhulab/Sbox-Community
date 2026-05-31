@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="Zn-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小盒子 - {{filename}}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 主容器 */
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        /* 标题样式 */
+        h1 {
+            font-size: 2em;
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        /* 作者信息 */
+        .author-info {
+            font-size: 1.2em;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .author-info a {
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .author-info a:hover {
+            text-decoration: underline;
+        }
+
+        /* iframe 样式 */
+        iframe {
+            width: 100%;
+            max-width: 800px;
+            height: 450px;
+            border: none;
+            border-radius: 8px;
+        }
+
+        /* 返回链接 */
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            font-size: 1.1em;
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* 响应式布局 */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 15px;
+            }
+
+            iframe {
+                width: 100%;
+                max-width: 100%;
+                height: 300px;
+            }
+        }
+        /* 新增样式: 用于处理文本换行 */
+        .jianjie {
+            white-space: pre-line; /* 允许换行 */
+            text-align: left; /* 确保不居中 */
+            font-size: 1em;
+            color: #444;
+        }
+        .co {
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        }
+        .co a {
+        text-decoration: none;
+        color: rgb(0, 0, 0); 
+        font-size: 1.2em;
+        }
+        .scratch-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding-top: 75%; /* Scratch项目建议比例 */
+        }
+        .scratch-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        @media (max-width: 600px) {
+            .scratch-container {
+                padding-top: 100%; /* 移动端调整为正方形 */
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include "navbar.html" %}
+
+    <div class="container">
+        <div class="co">
+            <p><a href="/scratch/{{ id }}">work</a>  <a href="/scratch/{{ id }}/Issues">Issues</a>  <a href="/scratch/{{ id }}/wikis">wiki</a>  <a href="/scratch/{{ id }}/master">统计</a> {{ a|safe }}  <a href="/scratch/{{ id }}/Download">克隆/下载</a>  <a href="/scratch/{{ id }}/license">license:{{ license }}</a></p><br>
+        </div>
+        <form method="POST" enctype="multipart/form-data">
+            <label for="geixing">作品名：</label>
+            <input type="text" id="geixing" name="geixing" value="{{ gexing1 }}"><br><br>
+        
+            <label for="jianjie">简介：</label><br>
+            <textarea name="jianjie" style="width: 1000px; height: 400px;" class="jianjie">{{ jianjie1 }}</textarea><br><br>
+        
+            <label for="cover">上传新封面（可选）：</label><br>
+            <input type="file"
+                   class="file-input"
+                   id="cover"
+                   name="cover"
+                   accept=".png, .jpg, .jpeg">
+            <small>支持格式：PNG、JPG、JPEG</small><br><br>
+        
+            <label for="new_version">上传新版本文件（可选）：</label><br>
+            <input type="file"
+                   class="file-input"
+                   id="new_version"
+                   name="new_version"
+                   accept=".html,.sb3,application/zip,text/html">
+            <small>支持格式：.sb3, .zip, .html</small><br><br>
+        
+            <input type="submit" value="保存更改">
+        </form>
+    </div>
+    
+    <footer>
+            {{ footer|safe }}
+    </footer>
+
+    <script>
+        // 导航栏下拉菜单切换
+        function toggleDropdown(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const toggle = event.currentTarget;
+            const dropdown = toggle.closest('.navbar-dropdown');
+            
+            if (!dropdown) {
+                console.error('Dropdown parent not found');
+                return;
+            }
+            
+            // 关闭其他打开的下拉菜单
+            document.querySelectorAll('.navbar-dropdown.open').forEach(function(dd) {
+                if (dd !== dropdown) {
+                    dd.classList.remove('open');
+                }
+            });
+            
+            // 切换当前下拉菜单
+            const isOpen = dropdown.classList.contains('open');
+            if (isOpen) {
+                dropdown.classList.remove('open');
+            } else {
+                dropdown.classList.add('open');
+            }
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.getAttribute('data-theme') === 'light') {
+                html.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // 点击其他地方关闭下拉菜单
+        document.addEventListener('click', function(event) {
+            const dropdown = event.target.closest('.navbar-dropdown');
+            if (!dropdown) {
+                document.querySelectorAll('.navbar-dropdown.open').forEach(function(dd) {
+                    dd.classList.remove('open');
+                });
+            }
+        });
+
+        // 页面加载时根据本地存储设置主题
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+
+        // 跳转到搜索页面
+        function navigateToSearch() {
+            window.location.href = "search";
+        }
+
+        // 文件选择交互
+        document.querySelector('.file-input').addEventListener('click', () => {
+            document.getElementById('file').click();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>项目PR列表 - {{ project_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/work_style.css') }}">
+</head>
+<body>
+    <!-- 全局顶部导航 -->
+    <header class="global-nav">
+        <h2><a href="/">Sbox</a> / <a href="/user/{{ session.get('username') }}">{{ session.get('username') }}</a> / {{ project_name }}</h2>
+    </header>
+
+    <!-- 项目导航 Tabs -->
+    <ul class="repo-tabs">
+        <li><a href="/scratch/{{ project_id }}">Code</a></li>
+        <li><a href="/scratch/{{ project_id }}?page=Issues">Issues</a></li>
+        <li><a href="/scratch/{{ project_id }}?page=wikis">Wiki</a></li>
+        <li><a href="/scratch/{{ project_id }}?page=master">Insights</a></li>
+        {% if a %}
+            {{ a|safe }}
+        {% endif %}
+        <li><a href="/scratch/{{ project_id }}?page=Download">Clone</a></li>
+        <li><a href="/scratch/{{ project_id }}?page=license">License</a></li>
+        <li><a href="/scratch_pr/project/{{ project_id }}/prs" class="active">PRs</a></li>
+    </ul>
+
+    <div class="main-content">
+        <div class="content-wrapper">
+            <div class="scratch-column">
+                <div class="repo-header">
+                    <h1>项目 "{{ project_name }}" 的PR列表</h1>
+                    <a href="/scratch_pr/submit/{{ project_id }}" style="background-color: var(--link-color); color: white; text-decoration: none; padding: 6px 12px; border-radius: 6px; display: inline-block;">New PR</a>
+                </div>
+
+                {% if is_author %}
+                    <p>作为项目作者，您可以查看所有PR。</p>
+                {% else %}
+                    <p>您只能查看已接受的PR。</p>
+                {% endif %}
+
+                <div style="margin-top: 16px;">
+                    {% for pr in prs %}
+                        <div style="border: 1px solid var(--border-color); border-radius: 6px; padding: 16px; margin-bottom: 12px; background-color: var(--tab-inactive-bg);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h3 style="margin: 0 0 8px 0;">
+                                        <a href="{{ url_for('scratch_pr.view_pr', pr_id=pr.id, id=project_id) }}" style="color: var(--link-color); text-decoration: none; font-size: 18px;">
+                                            PR #{{ pr.id }}: {{ pr.description[:50] }}{% if pr.description|length > 50 %}...{% endif %}
+                                        </a>
+                                    </h3>
+                                    <div style="font-size: 14px; color: var(--text-color); opacity: 0.75;">
+                                        <span>提交者: {{ pr.submitter_username }}</span> |
+                                        <span>状态:
+                                            {% if pr.status == 'pending' %}
+                                                <span style="color: #9a6700;">待审核</span>
+                                            {% elif pr.status == 'accepted' %}
+                                                <span style="color: #28a745;">已接受</span>
+                                            {% elif pr.status == 'rejected' %}
+                                                <span style="color: #cb2431;">已拒绝</span>
+                                            {% else %}
+                                                <span>{{ pr.status }}</span>
+                                            {% endif %}
+                                        </span> |
+                                        <span>时间: {{ pr.created_at[:19] if pr.created_at else '' }}</span>
+                                    </div>
+                                </div>
+                                <a href="{{ url_for('scratch_pr.view_pr', pr_id=pr.id, id=project_id) }}" style="color: var(--link-color); text-decoration: none; padding: 6px 12px; border: 1px solid var(--border-color); border-radius: 6px;">
+                                    查看详情
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    {% if prs|length == 0 %}
+                        <p style="text-align: center; padding: 20px; color: var(--text-color); opacity: 0.75;">暂无PR</p>
+                    {% endif %}
+                </div>
+
+                <div style="margin-top: 16px;">
+                    <a href="{{ url_for('scratch.scratch_word2', id=project_id) }}" style="color: var(--link-color); text-decoration: none;">← 返回项目页面</a>
+                </div>
+            </div>
+
+            <!-- 右侧信息栏 -->
+            <div class="about-column">
+                <h3>PR列表信息</h3>
+                <div class="about-content">
+                    <p><strong>项目:</strong> {{ project_name }}</p>
+                    <p><strong>PR总数:</strong> {{ prs|length }}</p>
+                    {% if is_author %}
+                        <p>您是项目作者，可以查看和管理所有PR。</p>
+                    {% else %}
+                        <p>您只能查看已接受的PR。</p>
+                    {% endif %}
+                    <p><a href="/scratch_pr/submit/{{ project_id }}" style="color: var(--link-color); text-decoration: none; background-color: var(--link-color); color: white; padding: 6px 12px; border-radius: 6px; display: inline-block; margin-top: 8px;">提交新PR</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        {% if footer %}
+            {{ footer|safe }}
+        {% endif %}
+    </footer>
+</body>
+</html>

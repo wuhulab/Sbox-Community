@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户更改</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+
+    <!-- 在 head 中提前运行脚本，防止 FOUC -->
+    <script>
+        // 立即读取主题，避免闪烁
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark'; // 默认 dark
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+    <style>
+        .dropdown-content {
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+        .dropdown.open .dropdown-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        textarea {
+            transition: all 0.3s ease;
+        }
+        textarea:focus {
+            border-color: #6366f1;
+        }
+        .theme-toggle {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:hover {
+            transform: rotate(30deg);
+        }
+
+        /* 用户更改页面特定样式 */
+        .user-settings-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .settings-card {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: var(--card-bg-color);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .settings-title {
+            text-align: center;
+            color: var(--text-color);
+            margin-bottom: 30px;
+            font-size: 28px;
+            border-bottom: 2px solid var(--link-color);
+            padding-bottom: 15px;
+        }
+
+        .security-links {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .security-link {
+            background-color: var(--primary-bg-color);
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .security-link a {
+            color: var(--link-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .security-link a:hover {
+            color: #60a5fa;
+        }
+
+        .security-link:hover {
+            transform: translateY(-3px);
+
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            color: var(--text-color);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background-color: var(--primary-bg-color);
+            color: var(--text-color);
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            border-color: var(--link-color);
+            outline: none;
+        }
+
+        .textarea-control {
+            height: 150px;
+            resize: vertical;
+        }
+
+        .textarea-control-large {
+            height: 250px;
+        }
+
+        .form-row {
+            margin-bottom: 20px;
+        }
+
+        .submit-btn {
+            background: var(--link-color);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+            width: auto;
+        }
+
+        .submit-btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .security-links {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .settings-card {
+                padding: 20px;
+            }
+
+            .settings-title {
+                font-size: 24px;
+            }
+        }
+
+        /* 为固定导航栏预留空间 */
+        body {
+            padding-top: 60px !important;
+        }
+    </style>
+</head>
+<body>
+    {% include "navbar.html" %}
+
+    <div class="user-settings-container">
+        <div class="settings-card">
+            <h1 class="settings-title">用户更改</h1>
+
+            <div class="security-links">
+                <div class="security-link">
+                    <a href="/enable-totp">添加TOTP</a>
+                </div>
+                <div class="security-link">
+                    <a href="/zerocatlogin">关联ZeroCat账号</a>
+                </div>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data" class="user-settings-form">
+                <div class="form-group">
+                    <div class="form-row">
+                        <label for="geixing" class="form-label">个性：</label>
+                        <input type="text" id="geixing" name="geixing" value="{{ gexing1 }}" class="form-control" required>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="jianjie" class="form-label">简介：</label>
+                        <textarea id="jianjie" name="jianjie" class="form-control textarea-control textarea-control-large" required>{{ jianjie1 }}</textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="shoucang" class="form-label">收藏展示：</label>
+                        <textarea id="shoucang" name="shoucang" class="form-control textarea-control" required>{{ shoucang1 }}</textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="version" class="form-label">社区版本：</label>
+                        <select id="version" name="version" class="form-control">
+                            <option value="社区版" {% if version == '社区版' %}selected{% endif %}>社区版</option>
+                            <option value="教育版" {% if version == '教育版' %}selected{% endif %}>教育版</option>
+                        </select>
+                    </div>
+
+                    <!-- 第三方登录选项 -->
+                    <div class="form-row">
+                        <label for="third_party_auth" class="form-label">第三方登录选项：</label>
+                        <select name="third_party_auth" id="third_party_auth" class="form-control">
+                            <option value="0" {% if third_party_auth == '0' %}selected{% endif %}>使用第三方登录时使用二级验证</option>
+                            <option value="1" {% if third_party_auth == '1' %}selected{% endif %}>完全不信任(不可使用)</option>
+                            <option value="2" {% if third_party_auth == '2' %}selected{% endif %}>信任第三方授权登录验证(默认)</option>
+                        </select>
+                    </div>
+
+                    <!-- 默认使用Turbowarp加载选项 -->
+                    <div class="form-row">
+                        <label for="use_turbowarp" class="form-label">默认使用Turbowarp加载.sb3文件：</label>
+                        <select name="use_turbowarp" id="use_turbowarp" class="form-control">
+                            <option value="false" {% if use_turbowarp == 'false' %}selected{% endif %}>否（使用默认播放器）</option>
+                            <option value="true" {% if use_turbowarp == 'true' %}selected{% endif %}>是（无视作品设置，强制使用Turbowarp）</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="cover" class="form-label">上传头像：</label>
+                        <input type="file" name="cover" id="cover" accept=".png, .jpg" class="form-control">
+                    </div>
+
+                    <div class="form-section">
+                        <h3>修改密码</h3>
+                        <div class="form-row">
+                            <label for="current_password" class="form-label">当前密码：</label>
+                            <input type="password" id="current_password" name="current_password" class="form-control">
+                        </div>
+
+                        <div class="form-row">
+                            <label for="new_password" class="form-label">新密码：</label>
+                            <input type="password" id="new_password" name="new_password" class="form-control">
+                        </div>
+
+                        <div class="form-row">
+                            <label for="confirm_password" class="form-label">确认新密码：</label>
+                            <input type="password" id="confirm_password" name="confirm_password" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <input type="submit" value="提交" class="submit-btn">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        {{ footer|safe }}
+    </footer>
+
+    <script>
+        // 导航栏下拉菜单切换
+        function toggleDropdown(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const toggle = event.currentTarget;
+            const dropdown = toggle.closest('.navbar-dropdown');
+            
+            if (!dropdown) {
+                console.error('Dropdown parent not found');
+                return;
+            }
+            
+            // 关闭其他打开的下拉菜单
+            document.querySelectorAll('.navbar-dropdown.open').forEach(function(dd) {
+                if (dd !== dropdown) {
+                    dd.classList.remove('open');
+                }
+            });
+            
+            // 切换当前下拉菜单
+            const isOpen = dropdown.classList.contains('open');
+            if (isOpen) {
+                dropdown.classList.remove('open');
+            } else {
+                dropdown.classList.add('open');
+            }
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.getAttribute('data-theme') === 'light') {
+                html.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // 点击其他地方关闭下拉菜单
+        document.addEventListener('click', function(event) {
+            const dropdown = event.target.closest('.navbar-dropdown');
+            if (!dropdown) {
+                document.querySelectorAll('.navbar-dropdown.open').forEach(function(dd) {
+                    dd.classList.remove('open');
+                });
+            }
+        });
+
+        // 页面加载时根据本地存储设置主题
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+
+        // 跳转到搜索页面
+        function navigateToSearch() {
+            window.location.href = "search";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}小盒子社区-{{ username }}{% endblock %}
+
+{% block content %}
+<div class="user-container">
+    <h1>{{ username }}</h1>
+    <h2>简介</h2>
+    <p></p>
+        {% for item in zhuopinsc1 %}
+            <li>
+                <a href="/scratch/{{ item.id }}">{{ item.title }}</a>
+            </li>
+        {% endfor %}
+</div>
+{% endblock %}

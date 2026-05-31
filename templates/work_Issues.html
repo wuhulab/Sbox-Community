@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ filename }} - 小盒子</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/work_style.css') }}">
+    <style>
+        /* Issues 页面专用样式 */
+        .issue-form {
+            background: var(--bg-card, #fff);
+            border: 1px solid var(--border-light, #e2e8f0);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .issue-form textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 12px;
+            border: 1px solid var(--border-light, #e2e8f0);
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+            background: var(--bg-secondary, #f8fafc);
+            color: var(--text-primary, #0f172a);
+        }
+        
+        .issue-form textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+        
+        .issue-form textarea::placeholder {
+            color: var(--text-tertiary, #94a3b8);
+        }
+        
+        .issue-form button[type="submit"] {
+            margin-top: 12px;
+            padding: 10px 20px;
+            background: #6366f1;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .issue-form button[type="submit"]:hover {
+            background: #4f46e5;
+        }
+        
+        .issue-type-selector {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .issue-type-selector label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            color: var(--text-secondary, #475569);
+        }
+        
+        .issue-type-selector input[type="radio"] {
+            accent-color: #6366f1;
+        }
+        
+        .issues-list-container {
+            background: var(--bg-card, #fff);
+            border: 1px solid var(--border-light, #e2e8f0);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .issues-list-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-light, #e2e8f0);
+            background: var(--bg-tertiary, #f1f5f9);
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary, #0f172a);
+        }
+        
+        .issues-content {
+            padding: 20px;
+            min-height: 150px;
+        }
+        
+        .issue-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-light, #e2e8f0);
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--text-primary, #0f172a);
+        }
+        
+        .issue-item:last-child {
+            border-bottom: none;
+        }
+        
+        .no-issues {
+            text-align: center;
+            color: var(--text-tertiary, #94a3b8);
+            padding: 40px 20px;
+            font-size: 14px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-tertiary, #94a3b8);
+            font-size: 14px;
+        }
+        
+        /* 分页样式 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 20px;
+            border-top: 1px solid var(--border-light, #e2e8f0);
+            flex-wrap: wrap;
+        }
+        
+        .pagination button {
+            padding: 8px 16px;
+            border: 1px solid var(--border-light, #e2e8f0);
+            background: var(--bg-card, #fff);
+            color: var(--text-secondary, #475569);
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .pagination button:hover:not(:disabled) {
+            background: #6366f1;
+            color: #fff;
+            border-color: #6366f1;
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .pagination button.active {
+            background: #6366f1;
+            color: #fff;
+            border-color: #6366f1;
+        }
+        
+        .page-info {
+            margin: 0 15px;
+            color: var(--text-tertiary, #94a3b8);
+            font-size: 13px;
+        }
+        
+        .page-buttons {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .page-buttons span {
+            padding: 8px 4px;
+            color: var(--text-tertiary, #94a3b8);
+        }
+        
+        .notice-text {
+            margin-top: 20px;
+            padding: 16px;
+            background: var(--bg-tertiary, #f1f5f9);
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--text-secondary, #475569);
+            line-height: 1.8;
+        }
+        
+        .notice-text a {
+            color: #6366f1;
+            text-decoration: none;
+        }
+        
+        .notice-text a:hover {
+            text-decoration: underline;
+        }
+        
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        
+        footer {
+            margin-top: 48px;
+            padding: 24px;
+            text-align: center;
+            color: var(--text-tertiary, #94a3b8);
+            font-size: 13px;
+            border-top: 1px solid var(--border-light, #e2e8f0);
+            background: var(--bg-primary, #fff);
+        }
+    </style>
+</head>
+<body>
+    <!-- 全局顶部导航（类似 GitHub 顶部） -->
+    <header class="global-nav">
+        <h2><a href="/">Sbox</a> / <a href="/user/{{ username }}">{{ username }}</a> / {{ filename }}</h2>
+    </header>
+
+    <!-- 项目导航 Tabs -->
+    <ul class="repo-tabs">
+        <li><a href="/scratch/{{ id }}" class="{{ 'active' if not request.args.get('page') else '' }}">Code</a></li>
+        <li><a href="/scratch/{{ id }}?page=Issues" class="{{ 'active' if request.args.get('page') == 'Issues' else '' }}">Issues</a></li>
+        <li><a href="/scratch/{{ id }}?page=wikis" class="{{ 'active' if request.args.get('page') == 'wikis' else '' }}">Wiki</a></li>
+        <li><a href="/scratch/{{ id }}?page=master" class="{{ 'active' if request.args.get('page') == 'master' else '' }}">Insights</a></li>
+        {% if a %}
+            {{ a|safe }}
+        {% endif %}
+        <li><a href="/scratch/{{ id }}?page=Download">Clone</a></li>
+        <li><a href="/scratch/{{ id }}?page=license" class="{{ 'active' if request.args.get('page') == 'license' else '' }}">License: {{ license }}</a></li>
+        <li><a href="/scratch_pr/project/{{ id }}/prs"> Pr</a></li>
+    </ul>
+
+    <div class="main-content">
+        <!-- Issue Form -->
+        <div class="issue-form">
+            <form method="POST">
+                <div class="issue-type-selector">
+                    <label>
+                        <input type="radio" name="issue_type" value="general" checked> 一般问题
+                    </label>
+                    <label>
+                        <input type="radio" name="issue_type" value="bug"> Bug 报告
+                    </label>
+                </div>
+                <textarea name="issue_content" placeholder="让我来喵两句..." required></textarea>
+                <button type="submit">提交新 Issue</button>
+            </form>
+        </div>
+        
+        <!-- Issues List -->
+        <div class="issues-list-container">
+            <div class="issues-list-header">Issues 讨论</div>
+            
+            <div class="issues-content" id="issues-container">
+                {% if issues %}
+                    {% for issue in issues %}
+                        <div class="issue-item">{{ issue }}</div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-issues">暂无 Issues 记录，快来发表第一条评论吧！</div>
+                {% endif %}
+            </div>
+            
+            {% if total_pages and total_pages > 1 %}
+            <div class="pagination" id="pagination">
+                <button id="prev-btn" onclick="changePage({{ current_page - 1 }})" {{ 'disabled' if current_page == 1 else '' }}>上一页</button>
+                
+                <div class="page-buttons" id="page-buttons">
+                    {% for p in range(1, total_pages + 1) %}
+                        {% if p == current_page %}
+                            <button class="active" onclick="changePage({{ p }})">{{ p }}</button>
+                        {% elif p == 1 or p == total_pages or (p >= current_page - 2 and p <= current_page + 2) %}
+                            <button onclick="changePage({{ p }})">{{ p }}</button>
+                        {% elif p == current_page - 3 or p == current_page + 3 %}
+                            <span>...</span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <button id="next-btn" onclick="changePage({{ current_page + 1 }})" {{ 'disabled' if current_page == total_pages else '' }}>下一页</button>
+                
+                <span class="page-info">共 {{ total_issues }} 条，第 {{ current_page }}/{{ total_pages }} 页</span>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="notice-text">
+            <p>举报滥用：<a href="mailto:sbox520@163.com">sbox520@163.com</a>，或加入 QQ 群：<a href="https://qm.qq.com/cgi-bin/qm/qr?k=1037989684" target="_blank">1037989684</a></p>
+            <p><strong>注意：</strong>本模块为 Issues 专用，请勿提交无关内容。</p>
+        </div>
+    </div>
+
+    <footer>
+        {{ footer|safe }}
+    </footer>
+
+    <script>
+        const workId = {{ id }};
+        let currentPage = {{ current_page | default(1) }};
+        let totalPages = {{ total_pages | default(1) }};
+        const totalIssues = {{ total_issues | default(0) }};
+        
+        async function loadIssues(page) {
+            const container = document.getElementById('issues-container');
+            container.innerHTML = '<div class="loading">加载中...</div>';
+            
+            try {
+                const response = await fetch(`/scratch/${workId}?page=Issues_api&p=${page}`);
+                if (!response.ok) throw new Error('Network error');
+                
+                const data = await response.json();
+                
+                if (data.issues && data.issues.length > 0) {
+                    container.innerHTML = data.issues.map(issue => 
+                        `<div class="issue-item">${issue}</div>`
+                    ).join('');
+                } else {
+                    container.innerHTML = '<div class="no-issues">暂无 Issues 记录</div>';
+                }
+                
+                currentPage = data.current_page;
+                totalPages = data.total_pages;
+                updatePagination();
+                
+                const newUrl = new URL(window.location);
+                if (page === 1) {
+                    newUrl.searchParams.delete('p');
+                } else {
+                    newUrl.searchParams.set('p', page);
+                }
+                window.history.pushState({}, '', newUrl);
+                
+            } catch (error) {
+                console.error('加载失败:', error);
+                container.innerHTML = '<div class="no-issues" style="color: #ef4444;">加载失败，请重试</div>';
+            }
+        }
+        
+        function updatePagination() {
+            const pagination = document.getElementById('pagination');
+            if (!pagination) return;
+            
+            document.getElementById('prev-btn').disabled = currentPage === 1;
+            document.getElementById('next-btn').disabled = currentPage === totalPages;
+            
+            const pageButtons = document.getElementById('page-buttons');
+            let buttonsHtml = '';
+            
+            for (let p = 1; p <= totalPages; p++) {
+                if (p === currentPage) {
+                    buttonsHtml += `<button class="active" onclick="changePage(${p})">${p}</button>`;
+                } else if (p === 1 || p === totalPages || (p >= currentPage - 2 && p <= currentPage + 2)) {
+                    buttonsHtml += `<button onclick="changePage(${p})">${p}</button>`;
+                } else if (p === currentPage - 3 || p === currentPage + 3) {
+                    buttonsHtml += `<span>...</span>`;
+                }
+            }
+            pageButtons.innerHTML = buttonsHtml;
+            
+            const pageInfo = pagination.querySelector('.page-info');
+            if (pageInfo) {
+                pageInfo.textContent = `共 ${totalIssues} 条，第 ${currentPage}/${totalPages} 页`;
+            }
+        }
+        
+        function changePage(page) {
+            if (page < 1 || page > totalPages || page === currentPage) return;
+            loadIssues(page);
+            document.getElementById('issues-container').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            const newTheme = current === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        window.addEventListener('popstate', function(e) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const page = parseInt(urlParams.get('p')) || 1;
+            if (page !== currentPage) {
+                loadIssues(page);
+            }
+        });
+    </script>
+</body>
+</html>

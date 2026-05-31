@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PR详情 #{{ pr.id }} - {{ project_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/work_style.css') }}">
+</head>
+<body>
+    <!-- 全局顶部导航 -->
+    <header class="global-nav">
+        <h2><a href="/">Sbox</a> / <a href="/user/{{ session.get('username') }}">{{ session.get('username') }}</a> / {{ project_name }}</h2>
+    </header>
+
+    <!-- 项目导航 Tabs -->
+    <ul class="repo-tabs">
+        <li><a href="/scratch/{{ pr.project_id }}">Code</a></li>
+        <li><a href="/scratch/{{ pr.project_id }}?page=Issues">Issues</a></li>
+        <li><a href="/scratch/{{ pr.project_id }}?page=wikis">Wiki</a></li>
+        <li><a href="/scratch/{{ pr.project_id }}?page=master">Insights</a></li>
+        {% if a %}
+            <!-- 注意：a 是 HTML 字符串，需确保它输出的是 <li><a>...</a></li> 格式 -->
+            {{ a|safe }}
+        {% endif %}
+        <li><a href="/scratch/{{ pr.project_id }}?page=Download">Clone</a></li>
+        <li><a href="/scratch/{{ pr.project_id }}?page=license">License</a></li>
+        <li><a href="/scratch_pr/project/{{ pr.project_id }}/prs" class="active">PRs</a></li>
+    </ul>
+
+    <div class="main-content">
+        <div class="content-wrapper">
+            <div class="scratch-column">
+                <div class="repo-header">
+                    <h1>PR #{{ pr.id }}: {{ pr.description[:50] }}{% if pr.description|length > 50 %}...{% endif %}</h1>
+                    <div class="stats">
+                        {% if pr.status == 'pending' %}
+                            <span style="color: #9a6700; background-color: rgba(154, 103, 0, 0.1); padding: 2px 6px; border-radius: 4px;">待审核</span>
+                        {% elif pr.status == 'accepted' %}
+                            <span style="color: #28a745; background-color: rgba(40, 167, 69, 0.1); padding: 2px 6px; border-radius: 4px;">已接受</span>
+                        {% elif pr.status == 'rejected' %}
+                            <span style="color: #cb2431; background-color: rgba(203, 36, 49, 0.1); padding: 2px 6px; border-radius: 4px;">已拒绝</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div style="border: 1px solid var(--border-color); border-radius: 6px; padding: 16px; margin-top: 16px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                        <div>
+                            <p><strong>项目:</strong> <a href="/scratch/{{ pr.project_id }}" style="color: var(--link-color); text-decoration: none;">{{ project_name }}</a></p>
+                            <p><strong>提交者:</strong> <a href="/user/{{ pr.submitter_username }}" style="color: var(--link-color); text-decoration: none;">{{ pr.submitter_username }}</a></p>
+                            <p><strong>提交时间:</strong> {{ pr.created_at[:19] if pr.created_at else '' }}</p>
+                        </div>
+                        <div>
+                            <a href="{{ url_for('scratch_pr.download_pr', pr_id=pr.id) }}" style="background-color: var(--link-color); color: white; text-decoration: none; padding: 6px 12px; border-radius: 6px; display: inline-block;">
+                                下载.sb3文件
+                            </a>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 16px;">
+                        <h3>PR说明</h3>
+                        <p style="white-space: pre-wrap;">{{ pr.description }}</p>
+                    </div>
+                </div>
+
+                {% if is_author %}
+                <div style="border: 1px solid var(--border-color); border-radius: 6px; padding: 16px; margin-top: 16px;">
+                    <h3>审核PR</h3>
+                    <form method="POST" action="{{ url_for('scratch_pr.review_pr', pr_id=pr.id) }}" style="max-width: 600px;">
+                        <div style="margin-bottom: 16px;">
+                            <label for="action" style="display: block; margin-bottom: 4px; font-weight: 600;">操作:</label>
+                            <select id="action" name="action" required style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px;">
+                                <option value="">选择操作</option>
+                                <option value="accept">接受</option>
+                                <option value="reject">拒绝</option>
+                            </select>
+                        </div>
+
+                        <div style="margin-bottom: 16px;">
+                            <label for="comment" style="display: block; margin-bottom: 4px; font-weight: 600;">评价/评论:</label>
+                            <textarea id="comment" name="comment" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; min-height: 100px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;"></textarea>
+                        </div>
+
+                        <button type="submit" style="background-color: var(--link-color); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">提交审核</button>
+                    </form>
+                </div>
+                {% endif %}
+
+                {% if pr.review_comment %}
+                <div style="border: 1px solid var(--border-color); border-radius: 6px; padding: 16px; margin-top: 16px; background-color: var(--tab-inactive-bg);">
+                    <h3>审核详情</h3>
+                    <p><strong>审核评价:</strong> {{ pr.review_comment }}</p>
+                    <p><strong>审核时间:</strong> {{ pr.review_at[:19] if pr.review_at else '' }}</p>
+                </div>
+                {% endif %}
+
+                <div style="margin-top: 16px; display: flex; gap: 12px;">
+                    <a href="{{ url_for('scratch_pr.list_project_prs', project_id=pr.project_id) }}" style="color: var(--link-color); text-decoration: none;">← 返回PR列表</a>
+                    <a href="{{ url_for('scratch.scratch_word2', id=pr.project_id) }}" style="color: var(--link-color); text-decoration: none;">返回项目页面 →</a>
+                </div>
+            </div>
+
+            <!-- 右侧信息栏 -->
+            <div class="about-column">
+                <h3>PR信息</h3>
+                <div class="about-content">
+                    <p><strong>ID:</strong> {{ pr.id }}</p>
+                    <p><strong>状态:</strong>
+                        {% if pr.status == 'pending' %}
+                            <span style="color: #9a6700;">待审核</span>
+                        {% elif pr.status == 'accepted' %}
+                            <span style="color: #28a745;">已接受</span>
+                        {% elif pr.status == 'rejected' %}
+                            <span style="color: #cb2431;">已拒绝</span>
+                        {% else %}
+                            {{ pr.status }}
+                        {% endif %}
+                    </p>
+                    <p><strong>提交者:</strong> {{ pr.submitter_username }}</p>
+                    <p><strong>提交时间:</strong> {{ pr.created_at[:19] if pr.created_at else '' }}</p>
+                    {% if pr.review_at %}
+                        <p><strong>审核时间:</strong> {{ pr.review_at[:19] if pr.review_at else '' }}</p>
+                    {% endif %}
+                    {% if is_author %}
+                        <p>您是项目作者，可以审核此PR。</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        {% if footer %}
+            {{ footer|safe }}
+        {% endif %}
+    </footer>
+</body>
+</html>

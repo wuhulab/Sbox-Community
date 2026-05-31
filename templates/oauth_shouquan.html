@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OAuth Authorization</title>
+</head>
+<body>
+    <h2>OAuth Authorization</h2>
+    <p>Application: {{ client_id }}</p>
+    <p>Redirect URI: {{ redirect_uri }}</p>
+    <p>Scope: {{ scope }}</p>
+    <form method="post">
+        <input type="hidden" name="client_id" value="{{ client_id }}">
+        <input type="hidden" name="redirect_uri" value="{{ redirect_uri }}">
+        <input type="hidden" name="state" value="{{ state }}">
+        <input type="hidden" name="scope" value="{{ scope }}">
+        <button type="submit" name="decision" value="allow">Allow</button>
+        <button type="submit" name="decision" value="deny">Deny</button>
+    </form>
+</body>
+</html>

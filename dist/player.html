@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="google" value="notranslate">
+  <link rel="shortcut icon" href="static/favicon.ico">
+  <title>小盒子代码运行 - Scratch 3.0</title>
+
+  <script>
+    // 解析 URL 参数
+    function getUrlParam(name) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+    }
+
+    // 获取 aid
+    const aid = getUrlParam('aid');
+    const isValidAid = /^[a-zA-Z0-9_]+$/.test(aid); // 安全校验
+    const projectUrl = aid && isValidAid ? `/scratchwork/${encodeURIComponent(aid)}.sb3` : null;
+
+    // 如果有 aid，优先使用 /scratchwork/aid.sb3，否则用默认
+    const defaultProjectURL = projectUrl || "static/project2.sb3";
+
+    window.scratchConfig = {
+      stageArea: {
+        scale: window.innerWidth / 480,
+        width: 480,
+        height: 360,
+        showControl: true,
+        fullscreenButton: {
+          show: true,
+          handleBeforeSetStageUnFull() { return true; },
+          handleBeforeSetStageFull() { return true; }
+        },
+        startButton: {
+          show: true,
+          handleBeforeStart() { return true; }
+        },
+        stopButton: {
+          show: true,
+          handleBeforeStop() { return true; }
+        }
+      },
+      handleVmInitialized: (vm) => {
+        window.vm = vm;
+      },
+      handleProjectLoaded: () => {
+        console.log('项目已加载');
+      },
+      handleDefaultProjectLoaded: () => {
+        console.log('默认项目已加载完成');
+      },
+      defaultProjectURL: defaultProjectURL
+    };
+  </script>
+</head>
+
+<body>
+  <div id="scratch">
+    <p>正在加载项目,你不要急...</p><br>
+    <p>如果你觉得项目很好，点个赞！</p><br>
+    <a href="https://space.bilibili.com/3493133419546943">作者bilibili</a>
+
+  </div>
+
+  <script type="text/javascript" src="lib.min.js"></script>
+  <script type="text/javascript" src="/chunks/player.js"></script>
+</body>
+
+</html>

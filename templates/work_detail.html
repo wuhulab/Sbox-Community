@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ filename }} - 小盒子</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/work_style.css') }}">
+    <!-- 引入AJAX工具库和交互模块 -->
+    <script src="{{ url_for('static', filename='js/ajax-utils.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/interaction.js') }}"></script>
+    <style>
+        /* AJAX交互样式 */
+        .ajax-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .ajax-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .ajax-btn.liked {
+            background-color: #ffebee;
+            border-color: #e74c3c;
+        }
+        
+        .ajax-btn.starred {
+            background-color: #fff8e1;
+            border-color: #f39c12;
+        }
+
+        /* 项目导航 tabs */
+        .repo-tabs {
+            display: flex;
+            list-style: none;
+            border-bottom: 1px solid var(--border-light);
+            padding: 0 16px;
+            background-color: var(--bg-tertiary);
+        }
+
+        .repo-tabs li {
+            margin-bottom: -1px;
+        }
+
+        .repo-tabs a {
+            display: inline-block;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            border: 1px solid transparent;
+            border-bottom: none;
+            transition: all 0.2s ease;
+        }
+
+        .repo-tabs a:hover {
+            color: var(--text-primary);
+        }
+
+        .repo-tabs a.active {
+            color: var(--primary);
+            background: var(--bg-primary);
+            border-color: var(--border-light);
+            border-radius: 6px 6px 0 0;
+        }
+    </style>
+</head>
+<body>
+    {% include "navbar.html" %}
+
+    <!-- 项目导航 Tabs -->
+    <ul class="repo-tabs">
+        <li><a href="/scratch/{{ id }}" class="{{ 'active' if not request.args.get('page') else '' }}">Code</a></li>
+        <li><a href="/scratch/{{ id }}?page=Issues" class="{{ 'active' if request.args.get('page') == 'Issues' else '' }}">Issues</a></li>
+        <li><a href="/scratch/{{ id }}?page=wikis" class="{{ 'active' if request.args.get('page') == 'wikis' else '' }}">Wiki</a></li>
+        <li><a href="/scratch/{{ id }}?page=master" class="{{ 'active' if request.args.get('page') == 'master' else '' }}">Insights</a></li>
+        <!-- 动态插入的额外链接 -->
+        {% if a %}
+            {{ a|safe }}
+        {% endif %}
+        <li><a href="/scratch/{{ id }}?page=Download">Clone</a></li>
+        <li><a href="/scratch/{{ id }}?page=license" class="{{ 'active' if request.args.get('page') == 'license' else '' }}">License: {{ license }}</a></li>
+        <li><a href="/scratch_pr/project/{{ id }}/prs"> Pr</a></li>
+    </ul>
+
+    <div class="repo-header">
+        <div class="stats">
+            <span>Views: {{ gk }}</span>
+            <a href="#" data-action="like" data-id="{{ id }}">Likes: {{ good }}</a>
+            <a href="#" data-action="star" data-id="{{ id }}">Star: {{ star }}</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="content-wrapper">
+            <!-- 左侧：Scratch 项目 -->
+            <div class="scratch-column">
+                <div class="scratch-container">
+                    <iframe src="{{ caz }}" title="Scratch 项目" allowfullscreen></iframe>
+                </div>
+            </div>
+    
+            <!-- 右侧：About 信息 -->
+            <div class="about-column">
+                <h3>About</h3>
+                <div class="about-content">
+                    <p><strong>Name：</strong>{{ filename }}</p>
+                    <p><strong>Author：</strong><a href="{{ url }}">{{ username }}</a></p>
+                    <p><strong>License：</strong>{{ license }}</p>
+                    <div class="stats">
+                        <p>Views: {{ gk }}</p>
+                        <p>Likes: {{ good }}</p>
+                        <p>Star: {{ star }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        {{ footer|safe }}
+    </footer>
+
+    <script>
+        // 点赞/收藏逻辑
+        document.addEventListener('click', async (e) => {
+            const target = e.target.closest('a[data-action]');
+            if (!target) return;
+            e.preventDefault();
+            const action = target.dataset.action;
+            const id = target.dataset.id;
+
+            try {
+                const res = await fetch(`/scratch${action}=${id}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action })
+                });
+
+                if (!res.ok) throw new Error('Network error');
+                const data = await res.json();
+                if (action === 'like') {
+                    target.textContent = `Likes: ${data.like}`;
+                } else if (action === 'star') {
+                    target.textContent = `Star: ${data.star}`;
+                }
+            } catch (err) {
+                console.error('操作失败:', err);
+                alert('操作频繁或网络错误');
+            }
+        });
+    </script>
+</body>
+</html>

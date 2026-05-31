@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}小盒子社区{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    {% block extra_css %}{% endblock %}
+    
+    <!-- 在 head 中提前运行脚本，防止 FOUC -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+</head>
+<body>
+    <!-- 统一导航栏 -->
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">小盒子社区</a>
+        
+        <!-- 移动端菜单按钮 -->
+        <button class="menu-toggle" onclick="toggleNavbar()">☰</button>
+        
+        <!-- 导航链接 -->
+        <ul class="navbar-nav" id="navbarNav">
+            <li><a href="/">首页</a></li>
+            <li><a href="/search">作品搜索</a></li>
+            {% if session.get('username') %}
+            <li class="navbar-dropdown">
+                <a href="javascript:void(0)" class="navbar-dropdown-toggle" onclick="toggleDropdown(event)">
+                    {{ session['username'] }} ▾
+                </a>
+                <ul class="navbar-dropdown-menu">
+                    <li><a href="/user/{{ session['username'] }}">个人中心</a></li>
+                    <li><a href="/tougaoscratch">投稿 scratch</a></li>
+                    <li><a href="/users">用户更改</a></li>
+                    <li><a href="{{ url_for('main.logout') }}">登出</a></li>
+                </ul>
+            </li>
+            {% else %}
+            <li><a href="{{ url_for('main.login') }}">登录</a></li>
+            <li><a href="{{ url_for('main.register') }}">注册</a></li>
+            {% endif %}
+            <li><button class="theme-toggle" onclick="toggleTheme()">&#9788;</button></li>
+        </ul>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        {{ footer|safe }}
+    </footer>
+
+    <script>
+        // 导航栏切换（移动端）
+        function toggleNavbar() {
+            const nav = document.getElementById('navbarNav');
+            nav.classList.toggle('active');
+        }
+
+        // 下拉菜单切换
+        function toggleDropdown(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const toggle = event.currentTarget;
+            const dropdown = toggle.closest('.navbar-dropdown');
+            
+            if (!dropdown) {
+                console.error('Dropdown parent not found');
+                return;
+            }
+            
+            // 关闭其他打开的下拉菜单
+            document.querySelectorAll('.navbar-dropdown.open').forEach(function(dd) {
+                if (dd !== dropdown) {
+                    dd.classList.remove('open');
+                }
+            });
+            
+            // 切换当前下拉菜单
+            const isOpen = dropdown.classList.contains('open');
+            if (isOpen) {
+                dropdown.classList.remove('open');
+            } else {
+                dropdown.classList.add('open');
+            }
+            
+            console.log('Dropdown toggled:', dropdown.classList.contains('open'));
+        }
+
+        // 点击其他地方关闭下拉菜单
+        document.addEventListener('click', function(event) {
+            const dropdown = event.target.closest('.navbar-dropdown');
+            if (!dropdown) {
+                document.querySelectorAll('.navbar-dropdown.open').forEach(function(dd) {
+                    dd.classList.remove('open');
+                });
+            }
+        });
+
+        // 主题切换
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.getAttribute('data-theme') === 'light') {
+                html.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Navbar initialized');
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

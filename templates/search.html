@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作品搜索</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+    <style>
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 30px 40px;
+            padding: 20px;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+        .result-card {
+            background-color: var(--card-bg-color);
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            display: block;
+            text-decoration: none;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            margin: 0;
+        }
+        .result-card::before {
+            content: '';
+            display: block;
+            padding-top: 100%;
+        }
+        .result-card img {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .result-card h3 {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            font-size: 14px;
+            margin: 0;
+            padding: 15px 8px;
+            color: var(--text-color);
+            pointer-events: none;
+        }
+        @media (max-width: 1024px) {
+            .results-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 25px 30px;
+            }
+        }
+        @media (max-width: 768px) {
+            .results-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 20px 15px;
+            }
+            .result-card h3 {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include "navbar.html" %}
+
+    <h1>作品搜索</h1>
+    <form id="search-form">
+        <input type="text" id="search-term" name="search_term" placeholder="输入搜索内容" required>
+        <button type="submit">搜索</button>
+    </form>
+
+    <h2>搜索结果</h2>
+    <p id="search-time"></p>
+    <div id="results-grid" class="results-grid"></div>
+
+    <footer>{{ footer|safe }}</footer>
+
+    <script>
+        function toggleNavbar() {
+            const nav = document.getElementById('navbarNav');
+            nav.classList.toggle('active');
+        }
+
+        function toggleDropdown(event) {
+            event.stopPropagation();
+            const dropdown = event.currentTarget.parentElement;
+            dropdown.classList.toggle('open');
+        }
+
+        document.addEventListener('click', function() {
+            document.querySelectorAll('.navbar-dropdown.open').forEach(function(dd) {
+                dd.classList.remove('open');
+            });
+        });
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.getAttribute('data-theme') === 'light') {
+                html.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        document.getElementById('search-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            let searchTerm = document.getElementById('search-term').value;
+            if (!searchTerm.trim()) return;
+
+            fetch('/api/search', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ search_term: searchTerm, filter_term: '', selection: 'scratch' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('search-time').textContent = `搜索时间：${data.elapsed_time}ms`;
+                const resultsGrid = document.getElementById('results-grid');
+                if (data.results.length > 0) {
+                    resultsGrid.innerHTML = data.results.map(function(row) {
+                        return '<a href="/scratch/' + row.id + '" class="result-card">' +
+                            '<img src="/scratchphoto/' + row.id + '" alt="封面">' +
+                            '<h3>' + row.content + '</h3>' +
+                            '</a>';
+                    }).join('');
+                } else {
+                    resultsGrid.innerHTML = '<p>没有找到匹配的作品。</p>';
+                }
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+                document.getElementById('results-grid').innerHTML = '<p>搜索出错，请重试。</p>';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Tag</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f4f6f8;
+            --text-main: #2c3e50;
+            --text-sub: #7f8c8d;
+            --card-radius: 20px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --accent: #3498db;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 60px; 
+        }
+
+        /* --- 顶部栏 --- */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(244, 246, 248, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.3s;
+            cursor: text;
+            min-width: 100px;
+        }
+        h1:focus { border-bottom-color: var(--accent); }
+
+        .add-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #fff;
+            border: none;
+            font-size: 24px;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .add-btn:active { transform: scale(0.9); }
+        .add-btn:hover { background: var(--accent); color: white; }
+
+        /* --- 中间编辑区 --- */
+        main {
+            flex: 1;
+            padding: 20px 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            grid-auto-rows: 160px;
+            gap: 20px;
+            min-height: calc(100vh + 80px); 
+        }
+
+        /* --- 卡片通用样式 --- */
+        .card {
+            background: #fff;
+            border-radius: var(--card-radius);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            transition: transform 0.2s;
+            overflow: hidden;
+            user-select: none;
+            /* 关键：允许点击 */
+            cursor: pointer; 
+        }
+        .card:hover { }
+        .card:active { transform: scale(0.98); }
+        
+        /* 防止删除按钮触发卡片点击 */
+        .card .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            cursor: pointer;
+            font-size: 14px;
+            color: #e74c3c;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            z-index: 10;
+        }
+        .card:hover .delete-btn { opacity: 1; }
+
+        /* 布局变体 */
+        .card.span-2 { grid-column: span 2; }
+        .card.span-2-2 { grid-column: span 2; grid-row: span 2; }
+
+        /* 类型样式 */
+        .card-time {
+            background: #667eea;
+            color: white;
+            justify-content: center;
+            align-items: center;
+            cursor: move; /* 时间通常不需要编辑 */
+        }
+        .time-display { font-size: 2.5rem; font-weight: 700; letter-spacing: 1px; pointer-events: none;}
+        .date-display { font-size: 0.9rem; opacity: 0.8; margin-top: 5px; pointer-events: none;}
+
+        .card-tag { background: #fffbe7; border-left: 5px solid #f1c40f; }
+        .card-tag p { font-size: 1rem; color: #555; word-break: break-all; pointer-events: none;}
+
+        .card-hw { background: #e8f6f3; border-top: 5px solid #1abc9c; }
+        .card-hw .subject { font-size: 0.85rem; color: #16a085; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; pointer-events: none;}
+        .card-hw .content { font-size: 1.1rem; color: #333; flex: 1; overflow-y: auto; pointer-events: none;}
+        .card-hw.span-2-2 .content { font-size: 1.2rem; line-height: 1.6; }
+
+        /* --- 页脚 --- */
+        footer {
+            text-align: center;
+            padding: 40px 0 20px;
+            color: var(--text-sub);
+            font-size: 0.8rem;
+            opacity: 0.6;
+            margin-top: auto; 
+        }
+        footer a {
+            color: #3b82f6;
+        }
+
+        /* --- 弹窗 --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        .modal {
+            background: white;
+            padding: 30px;
+            border-radius: var(--card-radius);
+            width: 90%;
+            max-width: 400px;
+            animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .modal h3 { margin-bottom: 20px; color: var(--text-main); }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .modal-btn {
+            padding: 12px;
+            border: 2px solid #eee;
+            background: #fff;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-sub);
+        }
+        .modal-btn.active { border-color: var(--accent); color: var(--accent); background: #f0f8ff; }
+        
+        .input-group { margin-bottom: 20px; display: none; }
+        .input-group.show { display: block; }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            margin-top: 5px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        textarea { resize: vertical; min-height: 80px; }
+        
+        .action-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--text-main);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+            main { grid-template-columns: 1fr 1fr; } 
+            .card.span-2 { grid-column: span 2; }
+            .card-time { grid-column: span 2; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <!-- 添加ID以便保存 -->
+        <h1 id="page-title" contenteditable="true">高三8班</h1>
+        <button class="add-btn" onclick="openAddModal()">+</button>
+    </header>
+
+    <main id="card-container">
+        <!-- 卡片将通过JS加载 -->
+    </main>
+
+    <footer id="footer">
+        <p>2025 小盒子社区</p>
+        开源文件 <a href="https://gitee.com/wujiajiouwei/small-box-community">gitee</a> | <a href="https://gitee.com/wujiajiouwei/scratch-git">ScratchGit</a> | <a href="https://gitee.com/wujiajiouwei/sbox-api">Sboxapi</a><br>
+        网站相关 <a href = "/required">使用小盒子必读</a> | <a href="/download">下载相关软件</a> | <a href="/thanks">特别鸣谢</a><br>
+    </footer>
+
+    <!-- 模态框 -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <h3 id="modal-title">添加新卡片</h3>
+            
+            <!-- 类型选择器 (编辑模式下隐藏) -->
+            <div class="btn-group" id="type-selector">
+                <button class="modal-btn active" onclick="selectType('hw')">📚 作业</button>
+                <button class="modal-btn" onclick="selectType('tag')">📌 标签</button>
+                <button class="modal-btn" onclick="selectType('time')">⏰ 时间</button>
+            </div>
+
+            <div id="input-hw" class="input-group show">
+                <input type="text" id="hw-subject" placeholder="学科 (如: 数学)">
+                <textarea id="hw-content" placeholder="作业内容..."></textarea>
+            </div>
+
+            <div id="input-tag" class="input-group">
+                <textarea id="tag-content" placeholder="备注内容..."></textarea>
+            </div>
+
+            <div id="input-time" class="input-group">
+                <p style="color:#888; text-align:center;">显示当前时间。</p>
+            </div>
+
+            <button class="action-btn" id="confirm-btn" onclick="confirmAction()">确认添加</button>
+            <button class="action-btn" style="background:transparent; color:#999; margin-top:10px;" onclick="closeModal()">取消</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 全局状态 ---
+        const container = document.getElementById('card-container');
+        const modal = document.getElementById('modal');
+        const titleElem = document.getElementById('page-title');
+        let editingCardElement = null; // 当前正在编辑的卡片DOM元素，如果为null则是新增模式
+        let currentType = 'hw';
+
+        // --- 1. 初始化与数据加载 ---
+        window.onload = async function() {
+            await loadData();
+            // 标题失去焦点时保存
+            titleElem.addEventListener('blur', saveData);
+            // 实时时钟
+            setInterval(updateTimeDisplays, 1000);
+            updateTimeDisplays();
+        };
+
+        // SortableJS 初始化 (拖拽)
+        new Sortable(container, {
+            animation: 150,
+            ghostClass: 'sortable-ghost',
+            delay: 200, 
+            delayOnTouchOnly: true,
+            filter: '.delete-btn', // 过滤器，防止拖拽删除按钮
+            onEnd: function() {
+                saveData(); // 拖拽结束后保存顺序
+            }
+        });
+
+        // --- 2. 核心数据保存/读取逻辑 ---
+
+        // 检查用户是否已登录
+        async function checkLoginStatus() {
+            try {
+                const response = await fetch('/api/check_login', {
+                    method: 'GET',
+                    credentials: 'include'  // 包含 session cookie
+                });
+
+                // If logged in, the endpoint returns 200 with logged_in: true
+                // If not logged in, it returns 401 with logged_in: false
+                if (response.status === 200) {
+                    const data = await response.json();
+                    return data.logged_in === true;
+                } else if (response.status === 401) {
+                    return false;
+                }
+                return false;
+            } catch (error) {
+                console.log('检查登录状态失败:', error);
+                return false;
+            }
+        }
+
+        // 保存所有数据到服务器（如果已登录）或本地存储
+        async function saveData() {
+            const cards = [];
+            // 遍历 DOM 节点获取数据，保证顺序与界面一致
+            Array.from(container.children).forEach(card => {
+                cards.push({
+                    type: card.dataset.type,
+                    subject: card.dataset.subject || "",
+                    content: card.dataset.content || ""
+                });
+            });
+
+            const data = {
+                title: titleElem.innerText,
+                cards: cards
+            };
+
+            // 检查用户是否已登录
+            const isLoggedIn = await checkLoginStatus();
+
+            if (isLoggedIn) {
+                // 已登录，保存到服务器
+                try {
+                    const response = await fetch('/api/classtap/data', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                        credentials: 'include'  // 包含 session cookie
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        console.error('服务器保存失败:', errorData.error);
+                        // 如果服务器保存失败，回退到本地存储
+                        localStorage.setItem('classBoardData', JSON.stringify(data));
+                    }
+                } catch (error) {
+                    console.error('网络错误，保存到本地:', error);
+                    // 网络错误时，保存到本地存储
+                    localStorage.setItem('classBoardData', JSON.stringify(data));
+                }
+            } else {
+                // 未登录，保存到本地存储
+                localStorage.setItem('classBoardData', JSON.stringify(data));
+            }
+        }
+
+        // 从服务器（如果已登录）或本地存储加载数据
+        async function loadData() {
+            // 检查用户是否已登录
+            const isLoggedIn = await checkLoginStatus();
+
+            if (isLoggedIn) {
+                // 已登录，从服务器加载数据
+                try {
+                    const response = await fetch('/api/classtap/data', {
+                        method: 'GET',
+                        credentials: 'include'  // 包含 session cookie
+                    });
+
+                    if (response.ok) {
+                        const serverData = await response.json();
+                        if (serverData.title) titleElem.innerText = serverData.title;
+
+                        // 清空现有容器
+                        container.innerHTML = '';
+
+                        // 重建卡片
+                        if(serverData.cards && serverData.cards.length > 0) {
+                            serverData.cards.forEach(item => {
+                                renderCard(item.type, item.subject, item.content, true);
+                            });
+                        }
+                        return; // 成功从服务器加载，直接返回
+                    } else {
+                        console.error('从服务器加载数据失败，尝试从本地加载');
+                    }
+                } catch (error) {
+                    console.error('网络错误，尝试从本地加载:', error);
+                }
+            }
+
+            // 未登录或服务器加载失败，从本地存储加载
+            const raw = localStorage.getItem('classBoardData');
+            if (!raw) {
+                // 如果是第一次打开，加载默认数据
+                renderCard('time', '', '');
+                renderCard('tag', '', '欢迎使用！点击卡片可以编辑，长按可以拖动排序。');
+                return;
+            }
+
+            const data = JSON.parse(raw);
+            if(data.title) titleElem.innerText = data.title;
+
+            // 清空现有容器
+            container.innerHTML = '';
+
+            // 重建卡片
+            if(data.cards && data.cards.length > 0) {
+                data.cards.forEach(item => {
+                    renderCard(item.type, item.subject, item.content, true);
+                });
+            }
+        }
+
+        // --- 3. 渲染与DOM操作 ---
+
+        // 在界面上创建一个卡片DOM
+        function renderCard(type, subject, content, appendToEnd = false) {
+            const div = document.createElement('div');
+            let classes = 'card';
+            let innerHTML = '';
+
+            // 设置数据属性，方便后续读取和保存
+            div.dataset.type = type;
+            div.dataset.subject = subject;
+            div.dataset.content = content;
+
+            // 点击事件：点击卡片本身触发编辑
+            div.onclick = function(e) {
+                // 如果点击的是删除按钮，不触发编辑
+                if(e.target.classList.contains('delete-btn')) return;
+                openEditModal(div);
+            };
+
+            if (type === 'time') {
+                classes += ' card-time span-2';
+                // 时间卡片通常不需要编辑文本，可以禁用点击编辑
+                div.onclick = null;
+                div.style.cursor = 'move';
+                innerHTML = `
+                    <div class="time-display">--:--</div>
+                    <div class="date-display">...</div>
+                    <span class="delete-btn" onclick="removeCard(this)">✕</span>
+                `;
+            } else if (type === 'tag') {
+                classes += ' card-tag';
+                innerHTML = `
+                    <p>${content}</p>
+                    <span class="delete-btn" onclick="removeCard(this)">✕</span>
+                `;
+            } else if (type === 'hw') {
+                classes += ' card-hw';
+                // 智能判断大小
+                if (content.length > 50 || content.includes('\n')) {
+                    classes += ' span-2-2';
+                }
+                innerHTML = `
+                    <div class="subject">${subject}</div>
+                    <div class="content">${content.replace(/\n/g, '<br>')}</div>
+                    <span class="delete-btn" onclick="removeCard(this)">✕</span>
+                `;
+            }
+
+            div.className = classes;
+            div.innerHTML = innerHTML;
+
+            if(appendToEnd) {
+                container.appendChild(div);
+            } else {
+                container.insertBefore(div, container.firstChild);
+            }
+            if(type === 'time') updateTimeDisplays();
+        }
+
+        // --- 完整且健壮的 loadData ---
+        async function loadData() {
+            const isLoggedIn = await checkLoginStatus();
+            let rawData = null;
+
+            try {
+                if (isLoggedIn) {
+                    const res = await fetch('/api/classtap/data', { credentials: 'include' });
+                    if (res.ok) {
+                        rawData = await res.json();
+                        console.log('[API] Loaded data from server:', rawData);
+                    } else {
+                        throw new Error(`Server returned ${res.status}`);
+                    }
+                }
+            } catch (err) {
+                console.warn('Fallback to localStorage due to error:', err);
+            }
+
+            // If not logged in or API failed, try localStorage
+            if (!rawData) {
+                const raw = localStorage.getItem('classBoardData');
+                if (raw) {
+                    try {
+                        rawData = JSON.parse(raw);
+                        console.log('[Local] Loaded data from localStorage:', rawData);
+                    } catch (e) {
+                        console.error('localStorage parse error:', e);
+                    }
+                }
+            }
+
+            // 清空容器
+            container.innerHTML = '';
+
+            // 默认数据兜底
+            if (!rawData || typeof rawData.title !== 'string' || !Array.isArray(rawData.cards)) {
+                console.warn('No valid data found. Using default.');
+                renderCard('time', '', '', true);
+                renderCard('tag', '', '欢迎使用！点击卡片可以编辑，长按可以拖动排序。', true);
+                return;
+            }
+
+            // 渲染
+            titleElem.innerText = rawData.title;
+            rawData.cards.forEach(item => {
+                if (['hw', 'tag', 'time'].includes(item.type)) {
+                    renderCard(
+                        item.type,
+                        item.subject || "",
+                        item.content || "",
+                        true
+                    );
+                } else {
+                    console.warn('Unknown card type skipped:', item);
+                }
+            });
+        }
+
+        function removeCard(btn) {
+            // 阻止冒泡已经通过 onclick 位置处理了，但为了保险
+            event.stopPropagation();
+            if(confirm('确定删除这张卡片吗？')) {
+                btn.parentElement.remove();
+                saveData();
+            }
+        }
+
+        function updateTimeDisplays() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            const dateStr = now.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'long' });
+            
+            document.querySelectorAll('.card-time').forEach(card => {
+                card.querySelector('.time-display').textContent = timeStr;
+                card.querySelector('.date-display').textContent = dateStr;
+            });
+            document.getElementById('last-update').textContent = now.toLocaleTimeString();
+        }
+
+        // --- 4. 模态框交互逻辑 ---
+
+        // 打开“新增”模态框
+        function openAddModal() {
+            editingCardElement = null; // 标记为新增
+            document.getElementById('modal-title').innerText = "添加新卡片";
+            document.getElementById('confirm-btn').innerText = "确认添加";
+            document.getElementById('type-selector').style.display = 'grid'; // 显示类型选择
+            
+            // 清空输入
+            document.getElementById('hw-subject').value = '';
+            document.getElementById('hw-content').value = '';
+            document.getElementById('tag-content').value = '';
+            
+            selectType('hw'); // 默认选中作业
+            modal.style.display = 'flex';
+        }
+
+        // 打开“编辑”模态框
+        function openEditModal(element) {
+            editingCardElement = element; // 标记为编辑
+            document.getElementById('modal-title').innerText = "编辑卡片";
+            document.getElementById('confirm-btn').innerText = "保存修改";
+            document.getElementById('type-selector').style.display = 'none'; // 编辑时不能改类型
+            
+            const type = element.dataset.type;
+            currentType = type;
+            selectType(type); // 切换到对应输入界面
+
+            // 填充数据
+            if (type === 'hw') {
+                document.getElementById('hw-subject').value = element.dataset.subject;
+                document.getElementById('hw-content').value = element.dataset.content;
+            } else if (type === 'tag') {
+                document.getElementById('tag-content').value = element.dataset.content;
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        // 切换类型 UI
+        function selectType(type) {
+            currentType = type;
+            document.querySelectorAll('.modal-btn').forEach(btn => btn.classList.remove('active'));
+            // 找到对应的按钮高亮
+            const btnIndex = ['hw', 'tag', 'time'].indexOf(type);
+            if(btnIndex >= 0 && document.querySelectorAll('.modal-btn')[btnIndex]) {
+                document.querySelectorAll('.modal-btn')[btnIndex].classList.add('active');
+            }
+            
+            document.querySelectorAll('.input-group').forEach(grp => grp.classList.remove('show'));
+            document.getElementById(`input-${type}`).classList.add('show');
+        }
+
+        // 确认按钮逻辑（区分新增和编辑）
+        function confirmAction() {
+            let subject = '';
+            let content = '';
+
+            if (currentType === 'hw') {
+                subject = document.getElementById('hw-subject').value || '未命名';
+                content = document.getElementById('hw-content').value || '无内容';
+            } else if (currentType === 'tag') {
+                content = document.getElementById('tag-content').value || '无内容';
+            }
+            // time 类型不需要内容
+
+            if (editingCardElement) {
+                // --- 编辑模式 ---
+                const card = editingCardElement;
+                card.dataset.subject = subject;
+                card.dataset.content = content;
+                
+                // 更新 UI 类名和内容
+                let newClasses = 'card';
+                let innerHTML = '';
+
+                if (currentType === 'tag') {
+                    newClasses += ' card-tag';
+                    innerHTML = `<p>${content}</p><span class="delete-btn" onclick="removeCard(this)">✕</span>`;
+                } else if (currentType === 'hw') {
+                    newClasses += ' card-hw';
+                    if (content.length > 50 || content.includes('\n')) newClasses += ' span-2-2';
+                    innerHTML = `<div class="subject">${subject}</div><div class="content">${content.replace(/\n/g, '<br>')}</div><span class="delete-btn" onclick="removeCard(this)">✕</span>`;
+                }
+                
+                card.className = newClasses;
+                card.innerHTML = innerHTML;
+
+            } else {
+                // --- 新增模式 ---
+                renderCard(currentType, subject, content, false); // 插到最前
+            }
+
+            saveData(); // 保存变动
+            closeModal();
+        }
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+    </script>
+</body>
+</html>

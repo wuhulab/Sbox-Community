@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}离线游戏加载器{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+    }
+    iframe {
+        width: 100%;
+        height: 60vh;
+        border: none;
+        background-color: #f9f9f9;
+        margin-top: 20px;
+    }
+    button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <h1>🎮 离线游戏加载器</h1>
+    <p>首次加载会下载并缓存游戏。之后即使断网也可以继续玩。</p>
+
+    <button onclick="updateGame()">🔄 更新至最新版本</button>
+
+    <iframe id="gameFrame" src=""></iframe>
+{% endblock %}
+
+{% block extra_js %}
+    <!-- Service Worker 注册脚本 -->
+    <script>
+        const GAME_URL = 'http://localhost:5219/scratch2/1.html';  // 替换为你自己的远程游戏地址
+        const CACHE_NAME = '__cached_game_html_v1';
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register(new Blob([`
+                self.addEventListener('fetch', event => {
+                    event.respondWith(
+                        caches.match(event.request).then(response => {
+                            // 如果请求匹配到缓存中的资源，则返回缓存资源
+                            if (response) {
+                                return response;
+                            }
+
+                            // 对于特定的URL请求，返回缓存的游戏数据或重新获取
+                            const url = new URL(event.request.url);
+                            if (url.pathname === '/__get_cached_game') {
+                                return caches.open(CACHE_NAME).then(cache => {
+                                    return cache.match('/__cached_game_data').then(cachedResponse => {
+                                        if (cachedResponse) {
+                                            return cachedResponse;
+                                        }
+                                        return fetch(GAME_URL).then(networkResponse => {
+                                            cache.put('/__cached_game_data', networkResponse.clone());
+                                            return networkResponse;
+                                        });
+                                    });
+                                });
+                            }
+
+                            // 对于非特定URL请求，尝试从网络获取资源
+                            return fetch(event.request);
+                        })
+                    );
+                });
+            `], { type: 'application/javascript' }).createObjectURL())
+                .then(() => {
+                    loadCachedGame();
+                })
+                .catch(err => {
+                    console.error("❌ SW 注册失败", err);
+                    document.getElementById('gameFrame').srcdoc = '<p>无法启用离线缓存功能。</p>';
+                });
+        } else {
+            document.getElementById('gameFrame').src = GAME_URL;
+        }
+
+        function loadCachedGame() {
+            fetch('/__get_cached_game')
+                .then(res => {
+                    if (!res.ok) throw new Error("无法加载缓存的游戏数据");
+                    return res.text();
+                })
+                .then(html => {
+                    document.getElementById('gameFrame').srcdoc = html;
+                })
+                .catch(() => {
+                    document.getElementById('gameFrame').srcdoc = '<p>无法加载游戏，请检查网络连接。</p>';
+                });
+        }
+
+        function updateGame() {
+            if (!navigator.onLine) {
+                alert("⚠️ 当前处于离线状态，无法更新");
+                return;
+            }
+
+            fetch(GAME_URL)
+                .then(res => {
+                    if (!res.ok) throw new Error("网络响应失败");
+                    return res.text();
+                })
+                .then(html => {
+                    caches.open(CACHE_NAME).then(cache => {
+                        cache.put('/__cached_game_data', new Response(html));
+                    });
+
+                    document.getElementById('gameFrame').srcdoc = html;
+                    alert("✅ 已更新至最新版本");
+                })
+                .catch(err => {
+                    alert("❌ 更新失败：" + err.message);
+                });
+        }
+    </script>
+{% endblock %}

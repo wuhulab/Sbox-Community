@@ -1,0 +1,70 @@
+# Database & log files
+*.sdb
+*.db
+*.log
+*.sqlite
+
+# Executables and scripts (often auto-generated or platform-specific)
+*.bat
+*.exe
+
+# Python cache
+__pycache__/
+*.pyc
+.pytest_cache/
+*.dll
+
+
+# Virtual environments
+.venv/
+venv/
+env/
+sboxvenv/
+.trae/
+
+# IDE / Editor config
+.vscode/
+
+
+# Custom local/temp directories (no leading dot in actual names!)
+chat_cache/
+scratch/
+scratch2/
+pr/
+scratch_old/
+scratchphoto/
+avatar/
+guanggao/
+pr/
+多余代码.py
+新的代码.py
+flask-http.py
+aichatapi.py
+censor.py
+flask缓存修饰器2.py
+xiaoxi.py
+aiapidl.py
+dist/static/
+dist/chunks/
+dist/extension-worker.js
+dist/1ec1a83be92ce3c05727.worker.js
+dist/lib.min.js
+
+# Sensitive files — NEVER commit these!
+apikey.py
+secrets.py
+.env
+dist/images/weixin.jpg
+dist/js/pyodide.js.txt
+ssdb.py
+
+frontend/node_modules/
+
+.claude/
+.playwright/
+.playwright-cli/
+
+# Internal/private files not meant for open source
+小盒子文档.md
+验证码/
+arch/

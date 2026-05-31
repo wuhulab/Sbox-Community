@@ -1,0 +1,240 @@
+/* ========== 统一导航栏样式 ========== */
+
+/* CSS 变量（如果尚未定义） */
+:root {
+    --navbar-bg-color: var(--secondary-bg-color, #121314);
+    --navbar-text-color: var(--text-color, #e2e8f0);
+    --navbar-link-color: var(--link-color, #3b82f6);
+    --navbar-border-color: var(--border-color, #334155);
+    --navbar-hover-bg: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="light"] {
+    --navbar-bg-color: #ffffff;
+    --navbar-text-color: #1e293b;
+    --navbar-link-color: #3b82f6;
+    --navbar-border-color: #e2e8f0;
+    --navbar-hover-bg: #f1f5f9;
+}
+
+/* 基础导航栏样式 */
+.navbar {
+    background-color: var(--navbar-bg-color);
+    color: var(--navbar-text-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    height: 60px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--navbar-border-color);
+    margin: 0;
+    line-height: 1;
+}
+
+/* Logo/品牌区域 */
+.navbar-brand {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--navbar-text-color);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.navbar-brand:hover {
+    color: var(--navbar-link-color);
+}
+
+/* 导航链接区域 */
+.navbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-nav li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-nav a {
+    color: var(--navbar-text-color);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+}
+
+.navbar-nav a:hover {
+    background-color: var(--navbar-hover-bg);
+    color: var(--navbar-link-color);
+}
+
+/* 汉堡菜单按钮 */
+.menu-toggle {
+    background: none;
+    border: none;
+    color: var(--navbar-text-color);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    display: none; /* 默认隐藏，移动端显示 */
+    flex-shrink: 0;
+}
+
+.menu-toggle:hover {
+    background-color: var(--navbar-hover-bg);
+}
+
+/* 下拉菜单 */
+.navbar-dropdown {
+    position: relative;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-dropdown-toggle {
+    color: var(--navbar-text-color);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.navbar-dropdown-toggle:hover {
+    background-color: var(--navbar-hover-bg);
+    color: var(--navbar-link-color);
+}
+
+.navbar-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 180px;
+    background-color: var(--navbar-bg-color);
+    border: 1px solid var(--navbar-border-color);
+    border-radius: 8px;
+    z-index: 1001;
+    overflow: hidden;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* 当下拉菜单打开时显示 */
+.navbar-dropdown.open .navbar-dropdown-menu {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.navbar-dropdown-menu li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-dropdown-menu a {
+    display: block;
+    padding: 10px 16px;
+    color: var(--navbar-text-color);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.navbar-dropdown-menu a:hover {
+    background-color: var(--navbar-hover-bg);
+    color: var(--navbar-link-color);
+}
+
+/* 主题切换按钮 */
+.theme-toggle {
+    background: none;
+    border: none;
+    color: var(--navbar-text-color);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+    background-color: var(--navbar-hover-bg);
+    color: var(--navbar-link-color);
+}
+
+/* ========== 响应式设计 ========== */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+
+    .navbar-nav {
+        display: none;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background-color: var(--navbar-bg-color);
+        border-bottom: 1px solid var(--navbar-border-color);
+        flex-direction: column;
+        padding: 10px 0;
+        gap: 0;
+    }
+
+    .navbar-nav.active {
+        display: flex;
+    }
+
+    .navbar-nav a {
+        padding: 12px 20px;
+        border-radius: 0;
+        width: 100%;
+    }
+
+    .navbar-dropdown-menu {
+        position: static;
+        box-shadow: none;
+        border: none;
+        padding-left: 20px;
+        border-top: 1px solid var(--navbar-border-color);
+        margin-top: 0;
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}

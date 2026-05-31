@@ -1,0 +1,18 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作品展示</title>
+</head>
+<body>
+    <h1>所有作品</h1>
+    <ul>
+        {% for item in zhuopinsc %}
+            <li>
+                <a href="/作品/{{ item.id }}">{{ item.title }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

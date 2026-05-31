@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arch网站内容爬取与历史版本</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+
+        }
+        h1, h2 {
+            color: #0056b3;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background: #e9e9e9;
+            margin-bottom: 8px;
+            padding: 10px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        li a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+        li a:hover {
+            text-decoration: underline;
+        }
+        .status {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>网站内容爬取与历史版本管理</h1>
+
+        <h2>当前爬取状态</h2>
+        <div class="status {% if fetch_success %}success{% else %}error{% endif %}">
+            {{ status_message }}
+        </div>
+        <p>（每次访问此页面都会尝试爬取一次最新内容并进行比较）</p>
+
+        <h2>历史版本</h2>
+        {% if archived_versions %}
+            <ul>
+                {% for version in archived_versions %}
+                    <li>
+                        <span>版本名称: {{ version.display_name }}</span>
+                        <a href="/preview/{{ version.filename }}" target="_blank">在线预览</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>目前还没有历史版本被保存。</p>
+        {% endif %}
+    </div>
+</body>
+</html>

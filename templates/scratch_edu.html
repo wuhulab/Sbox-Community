@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}{{ filename }} - 小盒子{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/work_style.css') }}">
+{% endblock %}
+
+{% block content %}
+    <!-- 面包屑（保留原作品页的层级提示） -->
+    <header class="global-nav">
+        <h2><a href="/">Sbox</a> / <a href="/user/{{ username }}">{{ username }}</a> / {{ filename }}</h2>
+    </header>
+
+    <!-- 项目导航 Tabs -->
+    <ul class="repo-tabs">
+        <li><a href="/scratch/{{ id }}" class="{{ 'active' if not request.args.get('page') else '' }}">Code</a></li>
+        <li><a href="/scratch/{{ id }}?page=Issues" class="{{ 'active' if request.args.get('page') == 'Issues' else '' }}">Issues</a></li>
+        <li><a href="/scratch/{{ id }}?page=wikis" class="{{ 'active' if request.args.get('page') == 'wikis' else '' }}">Wiki</a></li>
+        <li><a href="/scratch/{{ id }}?page=master" class="{{ 'active' if request.args.get('page') == 'master' else '' }}">Insights</a></li>
+        <!-- 动态插入的额外链接 -->
+        {% if a %}
+            {{ a|safe }}
+        {% endif %}
+        <li><a href="/scratch/{{ id }}?page=Download">Clone</a></li>
+        <li><a href="/scratch/{{ id }}?page=license" class="{{ 'active' if request.args.get('page') == 'license' else '' }}">License: {{ license }}</a></li>
+        <li><a href="/scratch_pr/project/{{ id }}/prs"> Pr</a></li>
+    </ul>
+
+    <div class="repo-header">
+        <div class="stats">
+            <span>Views: {{ gk }}</span>
+            <a href="#" data-action="like" data-id="{{ id }}">Likes: {{ good }}</a>
+            <a href="#" data-action="star" data-id="{{ id }}">Star: {{ star }}</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="content-wrapper">
+            <!-- 左侧：Scratch 项目 -->
+            <div class="scratch-column">
+                <div class="scratch-container">
+                    <iframe src="{{ caz }}" title="Scratch 项目" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <!-- 右侧：About 信息 -->
+            <div class="about-column">
+                <h3>About</h3>
+                <div class="about-content">
+                    <p><strong>Name：</strong>{{ filename }}</p>
+                    <p><strong>Author：</strong><a href="{{ url }}">{{ username }}</a></p>
+                    <p><strong>License：</strong>{{ license }}</p>
+                    <div class="stats">
+                        <p>Views: {{ gk }}</p>
+                        <p>Likes: {{ good }}</p>
+                        <p>Star: {{ star }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        // 点赞/收藏逻辑
+        document.addEventListener('click', async (e) => {
+            const target = e.target.closest('a[data-action]');
+            if (!target) return;
+            e.preventDefault();
+            const action = target.dataset.action;
+            const id = target.dataset.id;
+
+            try {
+                const res = await fetch(`/scratch${action}=${id}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action })
+                });
+
+                if (!res.ok) throw new Error('Network error');
+                const data = await res.json();
+                if (action === 'like') {
+                    target.textContent = `Likes: ${data.like}`;
+                } else if (action === 'star') {
+                    target.textContent = `Star: ${data.star}`;
+                }
+            } catch (err) {
+                console.error('操作失败:', err);
+                alert('操作频繁或网络错误');
+            }
+        });
+    </script>
+{% endblock %}

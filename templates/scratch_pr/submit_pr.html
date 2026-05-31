@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>提交PR - {{ project_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/work_style.css') }}">
+</head>
+<body>
+    <!-- 全局顶部导航 -->
+    <header class="global-nav">
+        <h2><a href="/">Sbox</a> / <a href="/user/{{ session.get('username') }}">{{ session.get('username') }}</a> / 提交PR</h2>
+    </header>
+
+    <!-- 项目导航 Tabs -->
+    <ul class="repo-tabs">
+        <li><a href="/scratch/{{ project_id }}" class="active">Code</a></li>
+        <li><a href="/scratch/{{ project_id }}?page=Issues">Issues</a></li>
+        <li><a href="/scratch/{{ project_id }}?page=wikis">Wiki</a></li>
+        <li><a href="/scratch/{{ project_id }}?page=master">Insights</a></li>
+        {% if a %}
+            <!-- 注意：a 是 HTML 字符串，需确保它输出的是 <li><a>...</a></li> 格式 -->
+            {{ a|safe }}
+        {% endif %}
+        <li><a href="/scratch/{{ project_id }}?page=Download">Clone</a></li>
+        <li><a href="/scratch/{{ project_id }}?page=license">License</a></li>
+        <li><a href="/scratch_pr/project/{{ project_id }}/prs" class="active">PRs</a></li>
+    </ul>
+
+    <div class="main-content">
+        <div class="content-wrapper">
+            <div class="scratch-column">
+                <h1>为项目 "{{ project_name }}" 提交PR</h1>
+
+                <form method="POST" enctype="multipart/form-data" style="max-width: 600px;">
+                    <div style="margin-bottom: 16px;">
+                        <label for="file" style="display: block; margin-bottom: 4px; font-weight: 600;">选择.sb3文件:</label>
+                        <input type="file" id="file" name="file" accept=".sb3" required style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px;">
+                    </div>
+
+                    <div style="margin-bottom: 16px;">
+                        <label for="description" style="display: block; margin-bottom: 4px; font-weight: 600;">PR说明:</label>
+                        <textarea id="description" name="description" required style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; min-height: 120px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;"></textarea>
+                    </div>
+
+                    <button type="submit" style="background-color: var(--link-color); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">提交PR</button>
+                </form>
+
+                <div style="margin-top: 16px;">
+                    <a href="{{ url_for('scratch.scratch_word2', id=project_id) }}" style="color: var(--link-color); text-decoration: none;">← 返回项目页面</a>
+                </div>
+            </div>
+
+            <!-- 右侧信息栏 -->
+            <div class="about-column">
+                <h3>提交PR指南</h3>
+                <div class="about-content">
+                    <p>提交PR（Pull Request）来为项目贡献代码改进。</p>
+                    <p>请确保：</p>
+                    <ul>
+                        <li>上传有效的.sb3文件</li>
+                        <li>提供清晰的PR说明</li>
+                        <li>遵循项目贡献指南</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        {% if footer %}
+            {{ footer|safe }}
+        {% endif %}
+    </footer>
+</body>
+</html>

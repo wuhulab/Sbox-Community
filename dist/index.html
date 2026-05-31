@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="google" value="notranslate">
+  <link rel="shortcut icon" href="static/favicon.ico">
+  <title>小盒子编辑器 - Scratch 3.0</title>
+  
+  <script>
+    window.scratchConfig = {
+      logo: {
+        show: true, //是否显示
+        url: "./static/logo.png", //logo地址，支持base64图片
+        handleClickLogo: () => { //处理LOGO点击事件
+        }
+      },
+      menuBar: {
+        //菜单栏样式
+        style: {
+          background: 'hsla(215, 100%, 65%, 1)',
+        },
+        //切换语言按钮
+        languageButton:{
+          show: true, //是否显示
+          defaultLanguage: 'zh-cn' //默认语言 en zh-cn zh-tw
+        },
+        //新建按钮
+        newButton:{
+          show: true, //是否显示
+          handleBefore(){
+            //拦截点击事件，返回true继续执行
+            return true
+          }
+        },
+        //从计算机加载按钮
+        loadFileButton:{
+          show: true, //是否显示
+          handleBefore(){
+            //拦截点击事件，返回true继续执行
+            return true
+          }
+        },
+        //保存到计算机按钮
+        saveFileButton:{
+          show: true, //是否显示
+          handleBefore(){
+            //拦截点击事件，返回true继续执行
+            return true
+          }
+        },
+        //加速模式按钮
+        turboModeButton:{
+          show: true //是否显示
+        },
+        //教程按钮
+        helpButton:{
+          show: true, //是否显示
+          handleBefore:()=>{
+            //拦截点击事件，返回true继续执行
+            return true
+          }
+        },
+        //我的物品按钮
+        myStuff:{
+          show: false, //是否显示
+          url: '/myProject' //跳转的连接
+        },
+        //用户头像按钮
+        userAvatar:{
+          show: false, //是否显示
+          username: '未登录', //用户名
+          avatar: './static/avatar.png', //用户头像
+          handleClick(){
+            //点击头像，可以弹出登录框等操作
+          }
+        },
+        //自定义按钮
+        customButtons: [
+          {
+            show: false, //是否显示
+            buttonName: '分享', //按钮名
+            style:{ //按钮样式
+              color: 'white',
+              background: 'hsla(30, 100%, 55%, 1)',
+            },
+            handleClick:()=>{ //按钮事件
+              console.log("自定义按钮1");
+              console.log('分享按钮')
+              window.scratch.getProjectCover(cover => {
+                //TODO 获取到作品截图
+              })
+              window.scratch.getProjectFile(file => {
+                //TODO 获取到项目文件
+              })
+              // 获取到项目名
+              var projectName = window.scratch.getProjectName()
+              console.log(projectName);
+            }
+          },
+          //可继续新增按钮
+        ]
+      }, 
+      blocks:{
+         // 积木缩放比例
+        scale: 0.8,
+        // 隐藏分类 费雷见README附录：
+        // 如需动态隐藏显示分类或积木，修改此配置后需手动执行 window.vm.emitWorkspaceUpdate()
+        hideCatagorys:[], 
+        //隐藏积木 积木代码见README附录：
+        hideBlocks:[],
+      },
+      stageArea:{ //舞台设置
+        fullscreenButton:{ //全屏按钮
+          show: true,
+          handleBeforeSetStageUnFull(){ //拦截退出全屏，返回true继续执行
+            return true
+          },
+          handleBeforeSetStageFull(){ //拦截全屏，返回true继续执行
+            return true
+          }
+        },
+        startButton:{ //开始按钮
+          show: true,
+          handleBeforeStart(){ //拦截开始按钮，返回true继续执行
+            return true
+          }
+        },
+        stopButton:{ // 停止按钮
+          show: true,
+          handleBeforeStop(){ //拦截停止按钮，，返回true继续执行
+            return true
+          }
+        }
+      },
+      //scratch vm初始化完毕
+      handleVmInitialized: (vm) => {
+        window.vm = vm
+      },
+      //作品加载完毕
+      handleProjectLoaded:() => {
+      },
+      //默认作品加载完毕
+      handleDefaultProjectLoaded:() => {
+      },
+      //默认项目地址,不需要修请删除本配置项
+      defaultProjectURL: "./static/project2.sb3",
+      //素材库配置
+      assets:{
+        //素材库地址，默认为/static下的素材库
+        assetHost: './static',
+        //素材库索引地址
+        defaultIndex:{
+          sprites: "./static/json_index/sprites.json",
+          costumes: "./static/json_index/costumes.json",
+          backdrops: "./static/json_index/backdrops.json",
+          sounds: "./static/json_index/sounds.json"
+        },
+        //拦截角色库打开
+        handleBeforeSpriteLibraryOpen(){
+          console.log("角色库打开")
+          //追加素材库
+          // window.scratch.pushSpriteLibrary(Arrays)
+          return true;
+        },
+        //拦截造型库打开
+        handleBeforeCostumesLibraryOpen(){
+          return true;
+        },
+        //拦截背景库打开
+        handleBeforeBackdropsLibraryOpen(){
+          return true;
+        },
+        //拦截声音库打开
+        handleBeforeSoundLibraryOpen(){
+          return true;
+        }
+      },
+    }
+
+
+  </script>
+</head>
+
+<body>
+  <div id="scratch">
+    <p>等待一下，你先别急……</p>
+  </div>
+<script type="text/javascript" src="lib.min.js"></script><script type="text/javascript" src="chunks/gui.js"></script></body>
+<script>
+
+</script>
+
+</html>

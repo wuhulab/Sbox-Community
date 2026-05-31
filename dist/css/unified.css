@@ -1,0 +1,566 @@
+/* Unified CSS for all HTML templates */
+
+:root {
+    /* Main theme: Dark blue/dark purple tech theme */
+    --primary-bg-color: #24282c; /* Dark background */
+    --secondary-bg-color: #121314; /* Secondary background (nav/cards) */
+    --text-color: #e2e8f0; /* Main text (light gray) */
+    --link-color: #3b82f6; /* Link/accent color (bright blue) */
+    --accent-color: #8b5cf6; /* Accent color (purple) */
+    --card-bg-color: #1c1d1f; /* Card background */
+    --card-shadow: none; /* Flat design, no shadow */
+    --border-color: #334155; /* Border color */
+    --font-size: 16px;
+    --transition-time: 0.3s;
+}
+
+/* Light theme */
+[data-theme="light"] {
+    --primary-bg-color: #f8fafc;
+    --secondary-bg-color: #ffffff;
+    --text-color: #1e293b;
+    --accent-color: #7c3aed;
+    --card-bg-color: #ffffff;
+    --card-shadow: none; /* Flat design, no shadow */
+    --border-color: #e2e8f0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--primary-bg-color);
+    color: var(--text-color);
+    transition: background-color var(--transition-time) ease, color var(--transition-time) ease;
+    font-size: var(--font-size);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+a {
+    text-decoration: none;
+    margin-bottom: 10px;
+    color: var(--link-color);
+    transition: color var(--transition-time) ease;
+}
+
+
+h1 {
+    color: var(--text-color);
+    border-bottom: 2px solid var(--link-color);
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+h2 {
+    color: var(--text-color);
+    margin: 30px 0 15px;
+    text-align: center;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* ========== Navigation Bar Style ========== */
+nav {
+    background-color: var(--secondary-bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Menu icon: Completely borderless, no background */
+.menu-icon2 {
+    font-size: 24px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: none;
+    background: transparent;
+    padding: 10px;
+    margin: 0;
+    display: block;
+}
+
+/* Menu container: Remove border and background */
+.menu-toggle {
+    border: none;
+    background: none;
+    padding: 0;
+    margin-right: 10px;
+    display: inline-block;
+}
+
+/* All dropdown containers: Remove border (especially note this) */
+.dropdown {
+    position: relative;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color var(--transition-time) ease;
+    margin-right: 10px;
+    /* Remove border and background color */
+    border: none;
+    background: none;
+}
+
+/* Dropdown content (preserved) */
+.dropdown-content {
+    display: none;
+    background-color: var(--secondary-bg-color);
+    color: var(--text-color);
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 200px;
+    border-radius: 5px;
+    z-index: 1000;
+    border: 1px solid var(--border-color);
+}
+
+.dropdown-content a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: background-color var(--transition-time) ease;
+}
+
+
+.dropdown.open .dropdown-content {
+    display: block;
+}
+
+.toolbox {
+    display: flex;
+    align-items: center;
+}
+
+/* Theme toggle button: Remove border */
+.theme-toggle {
+    background: none;
+    border: none; /* ✅ KEY: Remove border */
+    color: var(--text-color);
+    font-size: 24px;
+    cursor: pointer;
+    transition: color var(--transition-time) ease;
+    padding: 5px;
+    margin-right: 10px;
+}
+
+
+/* Search icon button: Remove border */
+.search-icon {
+    background: none;
+    border: none; /* ✅ KEY: Remove border */
+    color: var(--text-color);
+    font-size: 24px;
+    cursor: pointer;
+    transition: color var(--transition-time) ease;
+    padding: 5px;
+    margin-left: 10px;
+}
+
+
+/* ========== Container & Form Styles ========== */
+.container {
+    width: 90%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--card-bg-color);
+    border-radius: 8px;
+    box-shadow: var(--card-shadow);
+    flex: 1;
+    border: 1px solid var(--border-color);
+}
+
+.form-card {
+    background-color: var(--card-bg-color);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: var(--card-shadow);
+    max-width: 800px;
+    margin: 0 auto;
+    flex: 1;
+    border: 1px solid var(--border-color);
+}
+
+.form-title {
+    color: var(--text-color);
+    font-size: 28px;
+    border-bottom: 2px solid var(--link-color);
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-label {
+    display: block;
+    color: var(--text-color);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s;
+    background-color: var(--primary-bg-color);
+    color: var(--text-color);
+}
+
+.form-control:focus {
+    border-color: var(--link-color);
+    outline: none;
+}
+
+.textarea-control {
+    height: 200px;
+    resize: vertical;
+}
+
+.file-input {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    border: 2px dashed var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+
+.submit-btn {
+    background: var(--link-color);
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-block;
+}
+
+
+.tip {
+    color: #f87171;
+    font-size: 14px;
+    margin-top: 15px;
+}
+
+.converter-link {
+    color: var(--link-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+
+/* Search form */
+#search-form {
+    background-color: var(--card-bg-color);
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+    border: 1px solid var(--border-color);
+}
+
+#search-form input[type="text"],
+#search-form select {
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    flex: 1;
+    min-width: 200px;
+    font-size: 16px;
+    background-color: var(--primary-bg-color);
+    color: var(--text-color);
+}
+
+#search-form input[type="text"]:focus,
+#search-form select:focus {
+    outline: none;
+    border-color: var(--link-color);
+}
+
+#search-form label[for="selection"] {
+    color: var(--text-color);
+    font-weight: 500;
+    white-space: nowrap;
+    margin-right: 5px;
+}
+
+#search-form button[type="submit"] {
+    padding: 12px 25px;
+    background-color: var(--link-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+
+#search-time {
+    color: #94a3b8;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+#results-list {
+    list-style: none;
+    padding: 0;
+}
+
+#results-list li {
+    background-color: var(--card-bg-color);
+    padding: 20px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    box-shadow: var(--card-shadow);
+    transition: all 0.2s;
+    border: 1px solid var(--border-color);
+}
+
+
+#results-list a {
+    text-decoration: none;
+    color: var(--link-color);
+}
+
+
+#results-list strong {
+    color: var(--text-color);
+}
+
+#results-list p {
+    text-align: center;
+    padding: 40px;
+    background-color: var(--card-bg-color);
+    border-radius: 6px;
+    color: #94a3b8;
+    margin: 0;
+}
+
+/* Card grid layout */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 30px 40px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* Card style optimization */
+.card {
+    background-color: var(--card-bg-color);
+    border-radius: 12px;
+    padding: 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 1/1; /* Force square */
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s ease;
+}
+
+
+/* Fallback: Compatible with browsers that don't support aspect-ratio */
+.card::before {
+    content: '';
+    display: block;
+    padding-top: 100%; /* Square ratio */
+}
+
+.card img {
+    position: absolute; /* Absolute positioning for image */
+    top: 0; left: 0;
+    width: 100%;
+    object-fit: cover; /* Image proportional coverage */
+    height: 100%; /* Image height 100% of card */
+    border-radius: 8px;
+}
+
+.card h3 {
+    position: absolute;
+    bottom: 0; /* Close to bottom */
+    left: 0;
+    right: 0;
+    font-size: 14px;
+    margin: 0;
+    padding: 15px 8px;
+    color: var(--text-color);
+}
+
+/* Footer */
+footer {
+    background-color: var(--secondary-bg-color);
+    color: var(--text-color);
+    text-align: center;
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: auto;
+    border-top: 1px solid var(--border-color);
+}
+
+footer a {
+    color: var(--link-color);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .card-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 25px 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container,
+    .form-card {
+        width: 95%;
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .form-title {
+        font-size: 22px;
+    }
+
+    #search-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #search-form button[type="submit"] {
+        width: 100%;
+    }
+
+    .file-input {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .card-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px 15px;
+    }
+
+    .card h3 {
+        font-size: 13px;
+    }
+}
+
+/* Scratch container */
+.scratch-container {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 5px auto;
+    padding-top: 90%;
+    border-radius: 8px;
+    overflow: hidden;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+}
+
+.scratch-container::-webkit-scrollbar {
+    display: none;
+}
+
+.scratch-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Two-column layout container */
+.content-wrapper {
+    display: flex;
+    gap: 24px;
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.scratch-column {
+    flex: 3; /* 2/3 width */
+    min-width: 0; /* Prevent flex item overflow */
+}
+
+.about-column {
+    flex: 1; /* 1/3 width */
+    background: var(--tab-active-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 16px;
+    font-size: 14px;
+}
+
+.about-column h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.about-column p {
+    margin: 8px 0;
+}
+
+.about-column a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+
+/* Responsive: Single column on small screens */
+@media (max-width: 768px) {
+    .content-wrapper {
+        flex-direction: column;
+    }
+
+    .scratch-column,
+    .about-column {
+        width: 100%;
+    }
+
+    .about-column {
+        margin-top: 20px;
+    }
+}
