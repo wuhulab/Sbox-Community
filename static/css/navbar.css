@@ -2,14 +2,6 @@
 
 /* CSS 变量（如果尚未定义） */
 :root {
-    --navbar-bg-color: var(--secondary-bg-color, #121314);
-    --navbar-text-color: var(--text-color, #e2e8f0);
-    --navbar-link-color: var(--link-color, #3b82f6);
-    --navbar-border-color: var(--border-color, #334155);
-    --navbar-hover-bg: rgba(255, 255, 255, 0.1);
-}
-
-[data-theme="light"] {
     --navbar-bg-color: #ffffff;
     --navbar-text-color: #1e293b;
     --navbar-link-color: #3b82f6;
@@ -176,23 +168,6 @@
 }
 
 .navbar-dropdown-menu a:hover {
-    background-color: var(--navbar-hover-bg);
-    color: var(--navbar-link-color);
-}
-
-/* 主题切换按钮 */
-.theme-toggle {
-    background: none;
-    border: none;
-    color: var(--navbar-text-color);
-    font-size: 20px;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-.theme-toggle:hover {
     background-color: var(--navbar-hover-bg);
     color: var(--navbar-link-color);
 }

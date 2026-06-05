@@ -1,28 +1,16 @@
 /* Unified CSS for all HTML templates */
 
 :root {
-    /* Main theme: Dark blue/dark purple tech theme */
-    --primary-bg-color: #24282c; /* Dark background */
-    --secondary-bg-color: #121314; /* Secondary background (nav/cards) */
-    --text-color: #e2e8f0; /* Main text (light gray) */
-    --link-color: #3b82f6; /* Link/accent color (bright blue) */
-    --accent-color: #8b5cf6; /* Accent color (purple) */
-    --card-bg-color: #1c1d1f; /* Card background */
-    --card-shadow: none; /* Flat design, no shadow */
-    --border-color: #334155; /* Border color */
-    --font-size: 16px;
-    --transition-time: 0.3s;
-}
-
-/* Light theme */
-[data-theme="light"] {
     --primary-bg-color: #f8fafc;
     --secondary-bg-color: #ffffff;
     --text-color: #1e293b;
+    --link-color: #3b82f6;
     --accent-color: #7c3aed;
     --card-bg-color: #ffffff;
-    --card-shadow: none; /* Flat design, no shadow */
+    --card-shadow: none;
     --border-color: #e2e8f0;
+    --font-size: 16px;
+    --transition-time: 0.3s;
 }
 
 body {
@@ -146,19 +134,6 @@ nav {
     display: flex;
     align-items: center;
 }
-
-/* Theme toggle button: Remove border */
-.theme-toggle {
-    background: none;
-    border: none; /* ✅ KEY: Remove border */
-    color: var(--text-color);
-    font-size: 24px;
-    cursor: pointer;
-    transition: color var(--transition-time) ease;
-    padding: 5px;
-    margin-right: 10px;
-}
-
 
 /* Search icon button: Remove border */
 .search-icon {

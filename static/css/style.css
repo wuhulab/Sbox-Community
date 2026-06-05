@@ -1,24 +1,14 @@
 :root {
-    --primary-bg-color: #24282c;
-    --secondary-bg-color: #121314;
-    --text-color: #e2e8f0;
-    --link-color: #3b82f6;
-    --accent-color: #8b5cf6;
-    --card-bg-color: #1c1d1f;
-    --card-shadow: none;
-    --border-color: #334155;
-    --font-size: 16px;
-    --transition-time: 0.3s;
-}
-
-[data-theme="light"] {
     --primary-bg-color: #f8fafc;
     --secondary-bg-color: #ffffff;
     --text-color: #1e293b;
+    --link-color: #3b82f6;
     --accent-color: #7c3aed;
     --card-bg-color: #ffffff;
     --card-shadow: none;
     --border-color: #e2e8f0;
+    --font-size: 16px;
+    --transition-time: 0.3s;
 }
 
 body {

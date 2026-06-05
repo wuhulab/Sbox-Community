@@ -129,59 +129,6 @@
       color: white;
     }
 
-    /* 夜间模式（可选） */
-    body.night-mode {
-      background: #1a1a1a;
-      color: #eee;
-    }
-
-    body.night-mode .container {
-      background: #2c2c2c;
-      color: #eee;
-    }
-
-    body.night-mode .chapter-text {
-      color: #eee;
-    }
-
-    body.night-mode .nav-btn {
-      background-color: #d63384;
-    }
-
-    body.night-mode .nav-btn:hover {
-      background-color: #c21f6f;
-    }
-
-    body.night-mode .bookshelf-btn {
-      background-color: #3b3b3b;
-      color: #ffe6f2;
-      border: 1px solid #ffe6f2;
-    }
-
-    body.night-mode .bookshelf-btn.active {
-      background-color: #d63384;
-      color: white;
-    }
-
-    .toggle-night {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
-      padding: 0.5rem 1rem;
-      border-radius: 30px;
-      border: none;
-      background-color: #ff6ec7;
-      color: white;
-      cursor: pointer;
-      z-index: 1000;
-      font-size: 0.9rem;
-      transition: background-color 0.3s ease;
-    }
-
-    .toggle-night:hover {
-      background-color: #e05ebe;
-    }
-
     @media (max-width: 600px) {
       .nav-buttons {
         flex-direction: column;
@@ -191,9 +138,6 @@
   </style>
 </head>
 <body>
-
-  <!-- 夜间模式切换按钮 -->
-  <button class="toggle-night" onclick="toggleNightMode()">🌙 夜间模式</button>
 
   <div class="container">
 
@@ -231,11 +175,6 @@
   </div>
 
   <script>
-    // 切换夜间模式
-    function toggleNightMode() {
-      document.body.classList.toggle('night-mode');
-    }
-
     // 调整字体大小
     let fontSize = 1.1;
 

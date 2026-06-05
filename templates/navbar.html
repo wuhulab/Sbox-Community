@@ -29,7 +29,6 @@
         <li><a href="{{ url_for('main.login') }}">登录</a></li>
         <li><a href="{{ url_for('main.register') }}">注册</a></li>
         {% endif %}
-        <li><button class="theme-toggle" onclick="toggleTheme()">&#9788;</button></li>
     </ul>
 </nav>
 
@@ -66,21 +65,4 @@
         }
     });
 
-    // 主题切换
-    function toggleTheme() {
-        const html = document.documentElement;
-        if (html.getAttribute('data-theme') === 'light') {
-            html.removeAttribute('data-theme');
-            localStorage.setItem('theme', 'dark');
-        } else {
-            html.setAttribute('data-theme', 'light');
-            localStorage.setItem('theme', 'light');
-        }
-    }
-
-    // 页面加载时根据本地存储设置主题
-    (function() {
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-    })();
 </script>

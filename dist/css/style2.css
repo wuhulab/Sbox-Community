@@ -1,17 +1,4 @@
 :root {
-    /* 主色调：深蓝色/深紫色科技感主题 */
-    --primary-bg-color: #24282c; /* 深色背景 */
-    --secondary-bg-color: #121314; /* 次级背景（导航/卡片） */
-    --text-color: #e2e8f0; /* 主文本（浅灰） */
-    --link-color: #3b82f6; /* 链接/强调色（亮蓝） */
-    --card-bg-color: #1c1d1f; /* 卡片背景 */
-    --card-shadow: none;
-    --border-color: #334155; /* 边框色 */
-    --font-size: 16px;
-    --transition-time: 0.3s;
-}
-
-[data-theme="light"] {
     --primary-bg-color: #f8fafc;
     --secondary-bg-color: #ffffff;
     --text-color: #1e293b;
@@ -19,6 +6,8 @@
     --card-bg-color: #ffffff;
     --card-shadow: none;
     --border-color: #e2e8f0;
+    --font-size: 16px;
+    --transition-time: 0.3s;
 }
 
 body {
@@ -192,18 +181,6 @@ footer a {
     display: flex;
     align-items: center;
 }
-
-.theme-toggle {
-    background-color: transparent;
-    border: none; /* 移除边框 */
-    color: var(--text-color);
-    font-size: 24px;
-    cursor: pointer;
-    transition: all var(--transition-time) ease;
-    padding: 5px; /* 减小内边距 */
-    margin-left: 5px; /* 减小外边距 */
-}
-
 
 h2 {
     text-align: center;

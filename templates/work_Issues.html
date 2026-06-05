@@ -371,14 +371,6 @@
             document.getElementById('issues-container').scrollIntoView({ behavior: 'smooth' });
         }
         
-        function toggleTheme() {
-            const html = document.documentElement;
-            const current = html.getAttribute('data-theme');
-            const newTheme = current === 'light' ? 'dark' : 'light';
-            html.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-        }
-
         window.addEventListener('popstate', function(e) {
             const urlParams = new URLSearchParams(window.location.search);
             const page = parseInt(urlParams.get('p')) || 1;

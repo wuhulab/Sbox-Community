@@ -1,25 +1,14 @@
 :root {
-    --primary-bg-color: #24282c; /* 深色背景 */
-    --secondary-bg-color: #121314; /* 次级背景（导航/卡片） */
-    --text-color: #e2e8f0; /* 主文本（浅灰） */
-    --link-color: #3b82f6; /* 链接/强调色（亮蓝） */
-    --accent-color: #8b5cf6; /* 点缀色（紫色） */
-    --card-bg-color: #1c1d1f; /* 卡片背景 */
-    --card-shadow: none; /* 扁平化设计，无阴影 */
-    --border-color: #334155; /* 边框色 */
-    --font-size: 16px;
-    --transition-time: 0.3s;
-}
-
-/* 浅色主题 */
-[data-theme="light"] {
     --primary-bg-color: #f8fafc;
     --secondary-bg-color: #ffffff;
     --text-color: #1e293b;
+    --link-color: #3b82f6;
     --accent-color: #7c3aed;
     --card-bg-color: #ffffff;
-    --card-shadow: none; /* 扁平化设计，无阴影 */
+    --card-shadow: none;
     --border-color: #e2e8f0;
+    --font-size: 16px;
+    --transition-time: 0.3s;
 }
 
 body {
@@ -142,19 +131,6 @@ nav {
     display: flex;
     align-items: center;
 }
-
-/* 主题切换按钮：移除边框 */
-.theme-toggle {
-    background: none;
-    border: none; /* ✅ 关键：移除边框 */
-    color: var(--text-color);
-    font-size: 24px;
-    cursor: pointer;
-    transition: color var(--transition-time) ease;
-    padding: 5px;
-    margin-right: 10px;
-}
-
 
 /* 搜索图标按钮：移除边框 */
 .search-icon {

@@ -9,23 +9,14 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
     <style>
         :root {
-            --primary-bg-color: #000;
-            --secondary-bg-color: #1a1a1a;
-            --text-color: #00ffcc;
-            --link-color: #00ffcc;
-            --card-bg-color: #222;
-            --card-shadow: none;
-            --font-size: 16px;
-            --transition-time: 0.3s;
-        }
-
-        [data-theme="light"] {
             --primary-bg-color: #f0f8ff;
             --secondary-bg-color: #e0f7fa;
             --text-color: #00796b;
             --link-color: #00796b;
             --card-bg-color: #fff;
             --card-shadow: none;
+            --font-size: 16px;
+            --transition-time: 0.3s;
         }
 
         body {
@@ -213,19 +204,6 @@ nav {
             color: #3b82f6;
         }
 
-        .theme-toggle {
-            background-color: transparent;
-            border: none;
-            color: var(--text-color);
-            font-size: 24px;
-            cursor: pointer;
-            transition: color var(--transition-time) ease;
-        }
-
-        .theme-toggle:hover {
-            color: #ccc;
-        }
-
         .toolbox {
             display: flex;
             align-items: center;
@@ -367,15 +345,6 @@ nav {
                 dropdown.classList.remove('open');
             } else {
                 dropdown.classList.add('open');
-            }
-        }
-
-        function toggleTheme() {
-            const html = document.documentElement;
-            if (html.getAttribute('data-theme') === 'light') {
-                html.removeAttribute('data-theme');
-            } else {
-                html.setAttribute('data-theme', 'light');
             }
         }
 

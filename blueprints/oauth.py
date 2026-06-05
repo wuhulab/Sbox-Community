@@ -61,7 +61,6 @@ nav = """
                         <a href="/logout">登出</a>
                     </div>
                 </div>
-                <button class="theme-toggle" onclick="toggleTheme()">☀</button>
             </div>
         </div>
 """
