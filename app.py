@@ -136,7 +136,7 @@ nav = """
         </div>
 """
 
-# footer3 与 footer 内容一致，保留作为别名
+# footer3 与 footer 内容一致，保留作为别名XXX:可以不保留
 footer3 = footer
 
 # NOTE:首页推荐

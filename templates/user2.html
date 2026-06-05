@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -19,6 +19,15 @@
     </script>
     
     <style>
+        body {
+            padding-top: 60px !important;
+        }
+        .container {
+            flex: 1;
+        }
+        footer {
+            margin-top: auto !important;
+        }
         .avatar-container {
             position: relative;
             width: 140px;
@@ -138,10 +147,6 @@
                 font-size: 13px;
             }
         }
-        /* 为固定导航栏预留空间 */
-        body {
-            padding-top: 60px !important;
-        }
     </style>
 </head>
 <body>
@@ -172,6 +177,7 @@
                         {{ jianjie|safe }}
                     </div>
             </div>
+        </div>
         </div>
         
         <!-- 用户作品 -->
