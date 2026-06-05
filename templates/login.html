@@ -154,13 +154,14 @@
                     </div>
                 {% endfor %}
             {% endwith %}
-            <!-- 添加数学验证码部分 -->
+            <!-- 添加数学验证码部分（服务端验证） -->
             <div class="captcha-container">
                 <div id="captcha" class="captcha-box">
                     <canvas id="captchaCanvas" width="200" height="50"></canvas>
                 </div><br>
                 <label for="captchaInput">请输入数学题答案:</label>
                 <input type="text" id="captchaInput" name="captcha" class="captcha-input" required>
+                <input type="hidden" id="captchaId" name="captcha_id">
             </div>
             
             <label class="agreement">
@@ -173,58 +174,51 @@
     </div>
 
     <script>
-        // 生成随机的数学题并显示
-        function generateCaptcha() {
-            const num1 = Math.floor(Math.random() * 10) + 1;
-            const num2 = Math.floor(Math.random() * 10) + 1;
-            const correctAnswer = num1 + num2;
+        // 从服务端获取验证码
+        async function loadCaptcha() {
+            try {
+                const response = await fetch('/api/captcha/generate');
+                const data = await response.json();
+                document.getElementById('captchaId').value = data.captcha_id;
 
-            // 将正确答案存储在表单中，但设置为不可见
-            document.getElementById('loginForm').dataset.correctAnswer = correctAnswer;
+                const canvas = document.getElementById('captchaCanvas');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 在验证码区域显示数学题
-            const canvas = document.getElementById('captchaCanvas');
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.font = "24px Arial";
+                ctx.fillStyle = "#333";
+                ctx.fillText(data.problem, 40, 33);
 
-            // 设置字体
-            ctx.font = "24px Arial";
-            ctx.fillStyle = "#333";
-            ctx.fillText(`${num1} + ${num2} = ?`, 50, 30);
-
-            // 添加干扰线条
-            for (let i = 0; i < 5; i++) {
-                const x1 = Math.random() * canvas.width;
-                const y1 = Math.random() * canvas.height;
-                const x2 = Math.random() * canvas.width;
-                const y2 = Math.random() * canvas.height;
-                ctx.strokeStyle = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.7)`;
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(x2, y2);
-                ctx.stroke();
+                for (let i = 0; i < 5; i++) {
+                    const x1 = Math.random() * canvas.width;
+                    const y1 = Math.random() * canvas.height;
+                    const x2 = Math.random() * canvas.width;
+                    const y2 = Math.random() * canvas.height;
+                    ctx.strokeStyle = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.7)`;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    ctx.stroke();
+                }
+            } catch (e) {
+                console.error('验证码加载失败:', e);
             }
         }
-
-        // 验证用户输入的答案是否正确
-        document.getElementById('loginForm').addEventListener('submit', function(event) {
-            const userAnswer = parseInt(document.getElementById('captchaInput').value);
-            const correctAnswer = parseInt(this.dataset.correctAnswer);
-
-            if (userAnswer !== correctAnswer) {
-                event.preventDefault(); // 阻止表单提交
-                alert("验证码错误，请重新输入！");
-            }
-        });
 
         // 同意协议复选框控制登录按钮
         document.getElementById('agreeCheck').addEventListener('change', function() {
             document.getElementById('loginBtn').disabled = !this.checked;
         });
 
-        // 页面加载时生成验证码
-        window.onload = generateCaptcha;
+        // 点击验证码图片换一题
+        document.getElementById('captchaCanvas').addEventListener('click', function() {
+            document.getElementById('captchaInput').value = '';
+            loadCaptcha();
+        });
+
+        // 页面加载时从服务端获取验证码
+        window.onload = loadCaptcha;
     </script>
 </body>
 </html>

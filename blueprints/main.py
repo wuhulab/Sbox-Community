@@ -56,6 +56,7 @@ import pyotp
 import qrcode
 import io
 import base64
+from utils.captcha import generate_captcha, verify_captcha
 
 DATABASE = os.environ.get("SQLITE_DB", "sbox.db")
 
@@ -511,6 +512,12 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
         token = request.form["token"]
+        captcha_id = request.form.get("captcha_id", "")
+        captcha_answer = request.form.get("captcha", "")
+
+        if not verify_captcha(session, captcha_id, captcha_answer):
+            flash("验证码错误，请重新输入！", "error")
+            return render_template("login.html")
 
         with sqlite3.connect(DATABASE) as conn:
             cursor = conn.cursor()
@@ -691,6 +698,11 @@ def register_yzm():
         password = request.form["password"]
         yzm = request.form["yzm"]
         email = request.form["email"]
+        captcha_id = request.form.get("captcha_id", "")
+        captcha_answer = request.form.get("captcha", "")
+
+        if not verify_captcha(session, captcha_id, captcha_answer):
+            return render_template("information.html", Information="验证码错误，请重新输入！")
 
         import verification_codes
 
@@ -956,6 +968,11 @@ def api_login():
     username = data.get("username", "")
     password = data.get("password", "")
     token = data.get("token", "")
+    captcha_id = data.get("captcha_id", "")
+    captcha_answer = data.get("captcha", "")
+
+    if not verify_captcha(session, captcha_id, captcha_answer):
+        return jsonify({"success": False, "error": "验证码错误，请重新输入！"})
 
     with sqlite3.connect(DATABASE) as conn:
         cursor = conn.cursor()
@@ -982,6 +999,17 @@ def api_login():
         return jsonify({"success": True, "redirect": "/", "username": username})
     else:
         return jsonify({"success": False, "error": "用户名或密码错误"})
+
+
+# NOTE:生成服务器端验证码，返回题目和ID，答案存储在session中
+@main_bp.route("/api/captcha/generate", methods=["GET"])
+def captcha_generate():
+    problem, answer = generate_captcha()
+    captcha_id = secrets.token_hex(16)
+    captchas = session.get("captchas", {})
+    captchas[captcha_id] = answer
+    session["captchas"] = captchas
+    return jsonify({"captcha_id": captcha_id, "problem": problem})
 
 
 # NOTE:AJAX注册API，发送邮箱验证码

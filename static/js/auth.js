@@ -20,24 +20,13 @@ const SboxAuth = {
             const password = form.querySelector('#password')?.value;
             const token = form.querySelector('#token')?.value || '';
             const captchaInput = form.querySelector('#captchaInput')?.value;
+            const captchaId = form.querySelector('#captchaId')?.value;
 
             // 验证用户协议同意
             const agreeCheck = form.querySelector('#agreeCheck');
             if (agreeCheck && !agreeCheck.checked) {
                 SboxAjax.showMessage('请阅读并同意用户协议', 'error');
                 return;
-            }
-
-            // 验证数学验证码
-            if (captchaInput && form.dataset.correctAnswer) {
-                const correctAnswer = parseInt(form.dataset.correctAnswer);
-                const userAnswer = parseInt(captchaInput);
-                
-                if (userAnswer !== correctAnswer) {
-                    SboxAjax.showMessage('验证码错误，请重新输入！', 'error');
-                    if (options.onCaptchaError) options.onCaptchaError();
-                    return;
-                }
             }
 
             // 显示加载状态
@@ -47,7 +36,9 @@ const SboxAuth = {
                 const result = await this.login({
                     username,
                     password,
-                    token
+                    token,
+                    captcha: captchaInput,
+                    captcha_id: captchaId
                 });
 
                 if (result.success) {
@@ -64,6 +55,12 @@ const SboxAuth = {
                 } else {
                     SboxAjax.showMessage(result.error || '登录失败', 'error');
                     if (options.onError) options.onError(result);
+                    // 验证码错误时刷新验证码
+                    if (result.error && result.error.includes('验证码')) {
+                        if (typeof loadCaptcha === 'function') {
+                            loadCaptcha();
+                        }
+                    }
                 }
             } catch (error) {
                 SboxAjax.showMessage(error.message || '网络错误，请重试', 'error');
