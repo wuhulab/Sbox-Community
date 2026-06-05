@@ -79,13 +79,6 @@ nav = """
         </div>
 """
 
-# 页脚配置
-footer = """
-        <p>2025 小盒子社区</p>
-        开源文件 <a href="https://gitee.com/wujiajiouwei/small-box-community">gitee</a> | <a href="https://gitee.com/wujiajiouwei/scratch-git">ScratchGit</a> | <a href="https://gitee.com/wujiajiouwei/sbox-api">Sboxapi</a><br>
-        网站相关 <a href = "/required">使用小盒子必读</a> | <a href="/download">下载相关软件</a> | <a href="/thanks">特别鸣谢</a><br>
-"""
-
 
 # NOTE:个人中心首页，重定向到用户详情页
 @user_bp.route("/user/")
@@ -464,7 +457,6 @@ def users():
         jianjie1=jianjie1,
         shoucang1=shoucang1,
         nav=nav,
-        footer=footer,
         third_party_auth=third_party_auth,
         use_turbowarp=use_turbowarp,
     )

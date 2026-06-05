@@ -106,6 +106,14 @@ if not os.path.exists(app.config["SCRATCH2_PHOTO"]):
     os.makedirs(app.config["SCRATCH2_PHOTO"])
 
 
+# NOTE: 页脚统一配置（优先从环境变量 FOOTER 读取，否则使用默认值）
+_DEFAULT_FOOTER = """
+        <p>2025 小盒子社区</p>
+        开源文件 <a href="https://gitee.com/wujiajiouwei/small-box-community">gitee</a> | <a href="https://gitee.com/wujiajiouwei/scratch-git">ScratchGit</a> | <a href="https://gitee.com/wujiajiouwei/sbox-api">Sboxapi</a><br>
+        网站相关 <a href = "/required">使用小盒子必读</a> | <a href="/download">下载相关软件</a> | <a href="/thanks">特别鸣谢</a> | <a href="https://github.com/wuhulab/Sbox-Community">GitHub</a><br>
+"""
+footer = os.environ.get("FOOTER", _DEFAULT_FOOTER)
+
 # NOTE: 这里是下拉栏统一配置
 nav = """
             <div class="toolbox">
@@ -126,13 +134,6 @@ nav = """
                 <button class="theme-toggle" onclick="toggleTheme()">☀</button>
             </div>
         </div>
-"""
-
-# NOTE: 这里是页脚统一配置
-footer = """
-        <p>2025 小盒子社区</p>
-        开源文件 <a href="https://gitee.com/wujiajiouwei/small-box-community">gitee</a> | <a href="https://gitee.com/wujiajiouwei/scratch-git">ScratchGit</a> | <a href="https://gitee.com/wujiajiouwei/sbox-api">Sboxapi</a><br>
-        网站相关 <a href = "/required">使用小盒子必读</a> | <a href="/download">下载相关软件</a> | <a href="/thanks">特别鸣谢</a><br>
 """
 
 # footer3 与 footer 内容一致，保留作为别名

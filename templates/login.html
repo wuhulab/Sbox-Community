@@ -65,6 +65,25 @@
             background-color: #45a049;
         }
 
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .agreement {
+            font-size: 14px;
+            color: #555;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .agreement input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
         p {
             font-size: 14px;
             color: #555;
@@ -144,9 +163,11 @@
                 <input type="text" id="captchaInput" name="captcha" class="captcha-input" required>
             </div>
             
-            <button type="submit">登录</button>
+            <label class="agreement">
+                <input type="checkbox" id="agreeCheck"> 我已阅读并同意 <a href="{{ url_for('main.required2') }}">用户协议</a>
+            </label>
+            <button type="submit" id="loginBtn" disabled>登录</button>
         </form>
-        <p>登录即同意<a href="{{ url_for('main.required2') }}">用户协议</a></p>
         <p>还没有账户？<a href="{{ url_for('main.register') }}">注册</a> <a href="{{ url_for('main.forget') }}">忘记密码？</a></p>
         <p>其他方式登录 <a href="{{ url_for('main.OAuth_40code') }}">40code</a> <a href="/githublogin">Github</a> <a href="/zerocatlogin">ZeroCat</a></p>
     </div>
@@ -195,6 +216,11 @@
                 event.preventDefault(); // 阻止表单提交
                 alert("验证码错误，请重新输入！");
             }
+        });
+
+        // 同意协议复选框控制登录按钮
+        document.getElementById('agreeCheck').addEventListener('change', function() {
+            document.getElementById('loginBtn').disabled = !this.checked;
         });
 
         // 页面加载时生成验证码

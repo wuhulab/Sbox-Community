@@ -21,6 +21,13 @@ const SboxAuth = {
             const token = form.querySelector('#token')?.value || '';
             const captchaInput = form.querySelector('#captchaInput')?.value;
 
+            // 验证用户协议同意
+            const agreeCheck = form.querySelector('#agreeCheck');
+            if (agreeCheck && !agreeCheck.checked) {
+                SboxAjax.showMessage('请阅读并同意用户协议', 'error');
+                return;
+            }
+
             // 验证数学验证码
             if (captchaInput && form.dataset.correctAnswer) {
                 const correctAnswer = parseInt(form.dataset.correctAnswer);

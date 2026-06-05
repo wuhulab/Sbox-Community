@@ -87,13 +87,6 @@ nav = """
 """
 
 
-# 页脚配置
-footer3 = """
-        <p>2025 小盒子社区</p>
-        开源文件 <a href="https://gitee.com/wujiajiouwei/small-box-community">gitee</a> | <a href="https://gitee.com/wujiajiouwei/scratch-git">ScratchGit</a> | <a href="https://gitee.com/wujiajiouwei/sbox-api">Sboxapi</a><br>
-        网站相关 <a href = "/required">使用小盒子必读</a> | <a href="/download">下载相关软件</a> | <a href="/thanks">特别鸣谢</a><br>
-"""
-
 # 优秀作品列表
 Excellent_scratch = [10, 12, 36]
 
@@ -205,7 +198,6 @@ def index():
     return render_template(
         "index3.html",
         nav=nav,
-        footer=footer3,
         Excellent_scratch_1=Excellent_scratch_1,
         Excellent_scratch_2=Excellent_scratch_2,
         Excellent_scratch_3=Excellent_scratch_3,
@@ -649,6 +641,11 @@ Sbox Team
 @main_bp.route("/required")
 def required2():
     return render_template("required.html")
+
+
+@main_bp.route("/thanks")
+def thanks():
+    return render_template("thanks.html")
 
 
 # NOTE:用户注册，发送邮箱验证码
