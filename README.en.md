@@ -30,7 +30,8 @@ A Scratch community platform built with Flask. Users can upload, share, and mana
 ## Quick Start
 
 ```bash
-git clone https://github.com/your-username/sbox.git
+git clone https://github.com/wuhulab/Sbox-Community
+
 cd sbox
 python -m venv venv
 # Windows

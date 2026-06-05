@@ -30,7 +30,8 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/your-username/sbox.git
+git clone https://github.com/wuhulab/Sbox-Community
+
 cd sbox
 
 # 创建虚拟环境
