@@ -1,0 +1,81 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyc
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg
+
+# Virtual envs
+.venv/
+venv/
+env/
+sboxvenv/
+
+# IDE / Editor
+.vscode/
+.idea/
+.trae/
+.claude/
+
+# Playwright / 测试缓存
+.playwright/
+.playwright-cli/
+*.sb3
+
+# Local runtime data
+*.db
+*.sqlite
+*.sdb
+*.log
+chat_cache/
+scratch/
+scratch2/
+scratch_old/
+scratchphoto/
+avatar/
+guanggao/
+pr/
+uploads/
+arch/
+
+# 前端构建缓存
+frontend/node_modules/
+dist/static/
+dist/chunks/
+dist/extension-worker.js
+dist/lib.min.js
+
+# 敏感文件 (禁止进镜像)
+.env
+apikey.py
+secrets.py
+ssdb.py
+dist/images/weixin.jpg
+dist/js/pyodide.js.txt
+
+# 临时/多余文件
+多余代码.py
+新的代码.py
+flask-http.py
+aichatapi.py
+censor.py
+flask缓存修饰器2.py
+xiaoxi.py
+aiapidl.py
+小盒子文档.md
+验证码/
+
+# Docker 自身
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# Git / CI
+.git/
+.github/
+.gitignore

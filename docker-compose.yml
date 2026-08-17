@@ -1,0 +1,34 @@
+services:
+  sbox:
+    image: sbox-community:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sbox
+    ports:
+      - "5219:5219"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # 即使 .env 缺失也能跑起来的最小默认值
+      - SITE_URL=http://localhost:5219
+      - SQLITE_DB=/app/data/sbox.db
+      - DATABASE_TYPE=sqlite
+      - DEBUG=False
+    volumes:
+      - sbox-data:/app/data
+      - ./uploads:/app/uploads
+      - ./scratch2:/app/scratch2
+      - ./scratchphoto:/app/scratchphoto
+      - ./scratch_old:/app/scratch_old
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:5219/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  sbox-data:
